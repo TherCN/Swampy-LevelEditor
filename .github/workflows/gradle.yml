@@ -28,7 +28,9 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+    - name: Make Gradle executable
+      run: chmod +x ./gradlew
+    - name: Android Build
+      uses: vgaidarji/android-github-actions-build@v1.0.1
       with:
-        arguments: build
+        args: "./gradlew assembleDebug"
