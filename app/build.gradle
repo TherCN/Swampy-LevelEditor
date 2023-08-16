@@ -25,6 +25,5 @@ repositories {
 }  
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
-	implementation 'com.google.android.material:material:1.0.0'
-    implementation fileTree(dir: 'libs', include: ['*.dex'])
+    implementation 'com.google.android.material:material:1.0.0'
 }
