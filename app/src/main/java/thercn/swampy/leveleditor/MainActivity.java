@@ -11,15 +11,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
@@ -37,8 +37,12 @@ public class MainActivity extends AppCompatActivity {
         stopwatch.start();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (AppUtils.getLanguage() != "zh")
+        {
+            setContentView(R.layout.main_act_english);
+        }
 		Permission.checkPermission(this);  //申请权限
-		checkAppDir();	//检测应用文件夹
+		InitAppDir();	//检测应用文件夹
 		AppLog.WriteLog("初始化应用");
 		try {
 			Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
@@ -47,14 +51,11 @@ public class MainActivity extends AppCompatActivity {
 		}
 		getExistLevel();
         InitLayout();
-		AppUtils.ExportAssets(this, APPDIR + "/image/", "dirt.png");
-        AppUtils.ExportAssets(this, APPDIR + "/image/", "rock.png");
-        AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
-        AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
         stopwatch.stop();
         long elapsedTime = stopwatch.getElapsedTime();
+        
         AppLog.WriteLog("应用已初始化，耗时" + elapsedTime / 1000000 + "毫秒");
-
+        //throw new NullPointerException("你抛出了空指针异常");
     }
 
 
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
 		final EditText level_png_path = findViewById(R.id.level_png_path);
         final EditText output_img_path = findViewById(R.id.output_png_path);
+        
         Button generic_png = findViewById(R.id.generic_btn);
 
         generic_png.setOnClickListener(new View.OnClickListener() {
@@ -77,15 +79,15 @@ public class MainActivity extends AppCompatActivity {
                     File file = new File(LPP);
                     String OIP = output_img_path.getText().toString();
                     if (LPP.isEmpty()) {
-                        AppUtils.printText(MainActivity.this, "关卡PNG路径为空！");
+                        print("关卡PNG路径为空！(The level image path is empty!)");
                         return;
                     }
                     if (OIP.isEmpty()) {
-                        AppUtils.printText(MainActivity.this, "输出路径为空！");
+                        print("输出图片路径为空！(The output image path is empty!)");
                         return;
                     }
                     if (!file.exists()) {
-                        AppUtils.printText(MainActivity.this, "关卡PNG文件不存在！");
+                        print("关卡PNG文件不存在！(The image does not exist!)");
                         return;
                     }
                     
@@ -101,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
 					AppUtils.RenderPNG(OIP + ".tmp2.png", 3, OIP);
                     stopwatch.stop();
                     long elapsedTime = stopwatch.getElapsedTime();
-                    AppLog.WriteLog("代码执行耗时：" + elapsedTime / 1000000 + "毫秒");
+                    if (AppUtils.getLanguage() != "zh")
+                    {
+                        gen_info.setText("Done！The generated image is " + OIP + "，Taking " + elapsedTime / 1000000 + "ms");
+                    }
                     gen_info.setText("完成！生成的图片在" + OIP + "，耗时" + elapsedTime / 1000000 + "毫秒");
                     try {
                         Runtime.getRuntime().exec("rm " + OIP + ".tmp*");
@@ -112,12 +117,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void checkAppDir() {
+    public void InitAppDir() {
         File Appdir = new File(APPDIR);
 		File Levelsdir = new File(LevelsDir);
         if (!Appdir.exists()) {
             Levelsdir.mkdirs();
+            AppLog.InitLogFile();
+            AppUtils.ExportAssets(this, APPDIR + "/image/", "dirt.png");
+            AppUtils.ExportAssets(this, APPDIR + "/image/", "rock.png");
+            AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
+            AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
         }
+        AppLog.InitLogFile();
     }
 
     public void getExistLevel() {

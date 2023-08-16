@@ -113,7 +113,7 @@ public class AppUtils {
     //官方的关卡PNG的RGB值可能有所不同，此方法仅限于自制关
     public static void RenderPNG(String levelPNGFile, int target, String saveIMGFile) {
         String texture = "";
-		int[] dirt = {113,91,49};
+		int[] dirt = {112,91,49};
 		int[] rock = {71,71,71};
 		int[] rock_hilight = {160,160,160};
 		int[] rock_shadow = {40,40,40};
@@ -154,21 +154,34 @@ public class AppUtils {
 
 		int targetRGB = Color.rgb(r, g, b);
 		Bitmap replacementBitmap = BitmapFactory.decodeFile("/sdcard/Swampy/image/" + texture + ".png");
-
+        int tolerance = 10;
 		for (int i = 0; i < width * height; i++) {
-			if (originalBitmap.getPixel(i % width, i / width) == targetRGB) {
-				modifiedBitmap.setPixel(i % width, i / width, replacementBitmap.getPixel(i % width, i / width));
-                //AppLog.WriteLog("当前替换像素:X坐标:" + i % width + "，Y坐标:" + i / width + "，RGB:" + originalBitmap.getPixel(i % width, i / width));
-			} else {
-				modifiedBitmap.setPixel(i % width, i / width, originalBitmap.getPixel(i % width, i / width));
-			}
-		}
+			int x = i % width;
+            int y = i / width;
+            int pixel = originalBitmap.getPixel(x, y);
 
+            int originalR = Color.red(pixel);
+            int originalG = Color.green(pixel);
+            int originalB = Color.blue(pixel);
+
+            int diffR = Math.abs(Color.red(targetRGB) - originalR);
+            int diffG = Math.abs(Color.green(targetRGB) - originalG);
+            int diffB = Math.abs(Color.blue(targetRGB) - originalB);
+
+            if (diffR <= tolerance && diffG <= tolerance && diffB <= tolerance) {
+                int replacementPixel = replacementBitmap.getPixel(x, y);
+                modifiedBitmap.setPixel(x, y, replacementPixel);
+            } else {
+                modifiedBitmap.setPixel(x, y, pixel);
+            }
+        }
 		File outputFile = new File(saveIMGFile);
 		try {
 			OutputStream outputimg = new FileOutputStream(outputFile);
 			modifiedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputimg);
-		} catch (FileNotFoundException e) {}
+            Runtime.getRuntime().exec("rm " + levelPNGFile);
+		} catch (FileNotFoundException e) {
+        } catch (IOException e ) {}
         
     }
     //生成的代码结束

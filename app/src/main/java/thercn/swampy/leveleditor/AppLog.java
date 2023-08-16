@@ -29,7 +29,6 @@ public class AppLog {
         }
     }
     static <T> void WriteLog(T string){
-		InitLogFile();
         String str = String.valueOf(string);
         if (string instanceof String != true)
         {
