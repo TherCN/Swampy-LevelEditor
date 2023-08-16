@@ -65,6 +65,7 @@ jobs:
         umask 000;
         . ./env.sh;
         . /opt/setup-android-sdk.sh;
+        chmod +x ./gradlew;
         ./gradlew assembleDebug
         "'
 
