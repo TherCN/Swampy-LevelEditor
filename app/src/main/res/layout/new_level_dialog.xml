@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="130dp"
+	android:orientation="vertical"
+	style="@style/AppTheme.PopupOverlay"
+	android:id="@+id/nld_layout_id">
+
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/edit_level_name"
+		android:hint="请输入关卡名……"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="40dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="点击确定以新建关卡，点击窗口外部取消"
+			android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+	</RelativeLayout>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="确认"
+		android:id="@+id/new_level_confirm"
+		android:layout_gravity="right"/>
+
+</LinearLayout>
+
