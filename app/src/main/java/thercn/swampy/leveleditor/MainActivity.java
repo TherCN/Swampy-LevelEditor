@@ -1,6 +1,6 @@
 package thercn.swampy.leveleditor;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Switch;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
@@ -27,7 +27,7 @@ import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
 public class MainActivity extends AppCompatActivity {
     @Override
 	private PopupWindow mPoup;
-    public Context mContext = this;
+    public Activity mActivity = MainActivity.this;
     Stopwatch stopwatch = new Stopwatch();
     //long elapsedTime = stopwatch.getElapsedTime();
     static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     public void InitAppDir() {
         File Appdir = new File(APPDIR);
 		File Levelsdir = new File(LevelsDir);
-        if (!Appdir.exists()) {
+        if (!Appdir.exists() || !Levelsdir.exists()) {
             Levelsdir.mkdirs();
             AppLog.InitLogFile();
             AppUtils.ExportAssets(this, APPDIR + "/image/", "dirt.png");
@@ -140,18 +140,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
             ListView listView = findViewById(R.id.level_list);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fileNames);
+            final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fileNames);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        print("你点击了" + id);
+                        String clickedText = adapter.getItem(position);
+                        print("你点击了" + clickedText);
+                        Intent intent = new Intent(MainActivity.this, EditLevel.class);
+                        intent.putExtra("LevelName", clickedText);
+                        startActivity(intent);
                     }                                                                                           
                 });
         }
     }
     public void print(String text) {
-        Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
     }
     public void popupWindow() {
         final Button btn1 = findViewById(R.id.new_level);
@@ -171,25 +175,56 @@ public class MainActivity extends AppCompatActivity {
                         mPoup.showAtLocation(MainActivity.this.getWindow().getDecorView(), Gravity.CENTER, 0, 0);
 
                         final EditText editlevelname = view.findViewById(R.id.edit_level_name);
+                        final EditText custom_image = view.findViewById(R.id.image_path);
+                        final CheckBox checkBox = view.findViewById(R.id.custom_image_btn);
 
+                        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                    // 当CheckBox状态改变时执行的操作
+                                    if (isChecked) {
+                                        custom_image.setEnabled(true);
+                                    } else {
+                                        custom_image.setEnabled(false);
+                                    }
+                                }
+                            });
                         Button newlevelconfirmbtn = view.findViewById(R.id.new_level_confirm);
-
+                        
                         newlevelconfirmbtn.setOnClickListener(new View.OnClickListener() {                      
 								@Override public void onClick(View view) {
                                     String levelname = editlevelname.getText().toString();
 
                                     if (!levelname.isEmpty()) {
-
+                                        Intent intent = new Intent(MainActivity.this, EditLevel.class);
+                                        
                                         File LevelDir = new File(LevelsDir + "/" + levelname);
 
                                         if (LevelDir.exists()) {
                                             print("关卡文件名重复！");
                                             return;
                                         }
-
+                                        String Custom_Level_PNG_Path = custom_image.getText().toString();
+                                        if (Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked())
+                                        {
+                                            print("自定义关卡图片路径为空！");
+                                            return;
+                                        } 
+                                        if (!Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked()){
+                                            intent.putExtra("LevelPNGPath", Custom_Level_PNG_Path);
+                                            intent.putExtra("LevelName", levelname);
+                                            NewLevel.createLevelFolder(levelname);
+                                            NewLevel.createLevelXMLFile(levelname);
+                                            mPoup.dismiss();
+                                            startActivity(intent);
+                                            return;
+                                        }
                                         NewLevel.createLevelFolder(levelname);
+                                        NewLevel.createLevelPNGFile(levelname);
+                                        NewLevel.createLevelXMLFile(levelname);
+                                        intent.putExtra("LevelName", levelname);
                                         mPoup.dismiss();
-                                        startActivity(new Intent(MainActivity.this, EditLevel.class));
+                                        startActivity(intent);
 
                                     } else {
 
@@ -198,10 +233,12 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }                       
                             });
+                            
 
                     }
                 }
             });
+            
     }
 
 

@@ -2,7 +2,7 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
-	android:layout_height="130dp"
+	android:layout_height="wrap_content"
 	android:orientation="vertical"
 	style="@style/AppTheme.PopupOverlay"
 	android:id="@+id/nld_layout_id">
@@ -11,11 +11,25 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/edit_level_name"
-		android:hint="请输入关卡名……"/>
+		android:hint="请输入关卡名"/>
+
+	<CheckBox
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="自定义图片路径"
+		android:id="@+id/custom_image_btn"/>
+
+	<EditText
+		android:layout_width="wrap_content"
+		android:ems="15"
+		android:layout_height="wrap_content"
+		android:enabled="false"
+		android:hint="请输入图片路径"
+		android:id="@+id/image_path"/>
 
 	<RelativeLayout
 		android:layout_width="match_parent"
-		android:layout_height="40dp">
+		android:layout_height="wrap_content">
 
 		<TextView
 			android:layout_width="wrap_content"

@@ -1,22 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/bg"
-	android:layout_marginRight="0dp">
+	android:gravity="top|left"
+	android:orientation="vertical">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center">
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="保存"
+			android:id="@+id/save"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="重做"
+			android:layout_toRightOf="@id/save"
+			android:id="@+id/leveleditorButton2"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="撤销"
+			android:layout_toRightOf="@id/leveleditorButton2"
+			android:id="@+id/undo"/>
+
+	</RelativeLayout>
 
 	<RelativeLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content">
 
-		<Button
+		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="添加"
-			android:id="@+id/leveleditorButton1"/>
-		
+			android:text="点击位置:"
+			android:id="@+id/click"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="left">
+
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/leveleditorFrameLayout1">
+
+			<ScrollView
+				android:layout_width="200dp"
+				android:layout_height="wrap_content">
+
+				<ImageView
+					android:layout_width="200dp"
+					android:layout_height="wrap_content"
+					android:text="Text"
+					android:id="@+id/level_image"
+					android:scaleType="centerCrop"
+					android:adjustViewBounds="true"/>
+
+			</ScrollView>
+
+		</FrameLayout>
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_toRightOf="@id/leveleditorFrameLayout1">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="部件列表"
+				android:id="@+id/object_list_text"/>
+
+			<ScrollView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_below="@id/object_list_text"
+				android:id="@+id/object_list_view">
+
+				<ListView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:id="@+id/object_list"/>
+
+			</ScrollView>
+
+		</RelativeLayout>
+
 	</RelativeLayout>
 
 </LinearLayout>

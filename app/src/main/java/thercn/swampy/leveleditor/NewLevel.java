@@ -15,11 +15,9 @@ public class NewLevel {
         File levelfolder = new File(LevelsDir + "/" + str);
         if (!levelfolder.exists()) {
             levelfolder.mkdir();
-            createLevelFile(str);
         }
     }
-    public static void createLevelFile (String str){
-        File xmlFile = new File(LevelsDir + "/" + str + "/" + str + ".xml");
+    public static void createLevelPNGFile (String str){
         File pngFile = new File(LevelsDir + "/" + str + "/" + str + ".png");
         Bitmap bitmap = Bitmap.createBitmap(90, 120, Bitmap.Config.RGBA_F16);
         OutputStream out = null;
@@ -29,31 +27,18 @@ public class NewLevel {
             AppLog.WriteLog(e.toString());
         }
         bitmap.compress(Bitmap.CompressFormat.PNG,100,out);
-        
-        try {
-            xmlFile.createNewFile();
-            
-        } catch (IOException e) {
-            AppLog.WriteLog(e.toString());
-        }
-        String xmlFilePath = LevelsDir + "/" + str + "/" + str + ".xml";
-        FileWriter fwriter = null;
-        try {
-            fwriter = new FileWriter(xmlFilePath, true);
-            //反斜杠用来转义
-            fwriter.write("<?xml version=\"" + "1.0\" encoding=\"" + "utf-8\"/>");
-        } catch (IOException e) {
-            AppLog.WriteLog(e.toString());
-        } finally {
+    }
+    public static void createLevelXMLFile (String str){
+        File xmlFile = new File(LevelsDir + "/" + str + "/" + str + ".xml");
             try {
+                xmlFile.createNewFile();
+                FileWriter fwriter = new FileWriter(xmlFile, true);
+                fwriter.write("<?xml version=\"" + "1.0\" encoding=\"" + "utf-8\"/>");
                 fwriter.flush();
                 fwriter.close();
             } catch (IOException e) {
                 AppLog.WriteLog(e.toString());
             }
-            
-        }
-		AppLog.WriteLog("已创建关卡:" + str);
     }
 }
 
