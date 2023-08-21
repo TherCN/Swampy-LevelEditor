@@ -4,12 +4,14 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="top|left"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="@drawable/border">
 
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center">
+		android:gravity="center"
+		android:background="@drawable/border">
 
 		<Button
 			android:layout_width="wrap_content"
@@ -35,7 +37,8 @@
 
 	<RelativeLayout
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:background="@drawable/border">
 
 		<TextView
 			android:layout_width="wrap_content"
@@ -53,7 +56,8 @@
 		<FrameLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/leveleditorFrameLayout1">
+			android:id="@+id/leveleditorFrameLayout1"
+			android:background="@drawable/border">
 
 			<ScrollView
 				android:layout_width="200dp"
@@ -74,7 +78,8 @@
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_toRightOf="@id/leveleditorFrameLayout1">
+			android:layout_toRightOf="@id/leveleditorFrameLayout1"
+			android:background="@drawable/border">
 
 			<TextView
 				android:layout_width="wrap_content"

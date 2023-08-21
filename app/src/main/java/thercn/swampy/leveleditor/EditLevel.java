@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import thercn.swampy.leveleditor.R;
 import android.widget.FrameLayout;
+import org.xmlpull.v1.XmlPullParser;
 
 public class EditLevel extends AppCompatActivity {
 
@@ -94,7 +95,7 @@ public class EditLevel extends AppCompatActivity {
 
     }
     public void showObject() {
-
+      
     }
     public void showObjectProperty(Object obj) {
         //RelativeLayout ObjectPropertyLayout = findViewById(R.id.RL_CanEdit);
