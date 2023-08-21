@@ -1,4 +1,4 @@
-name: Android CI Release
+name: Android CI Debug
 
 on:
   pull_request:
@@ -22,9 +22,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleDebug
 
-      - name: Upload Release apk
+      - name: Upload Debug apk
         uses: actions/upload-artifact@v3
         with:
           name: apk-release
