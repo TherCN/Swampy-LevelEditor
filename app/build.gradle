@@ -26,8 +26,6 @@ repositories {
         url "https://jitpack.io"
 	url "https://maven.google.com"
     }    
-    jcenter()
-    mavenCentral()
 } 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
