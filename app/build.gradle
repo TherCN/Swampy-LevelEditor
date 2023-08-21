@@ -24,7 +24,7 @@ namespace "thercn.swampy.leveleditor"
 repositories {
     maven {     
         url "https://jitpack.io"
-	url "https://maven.google.com"
+	    url "https://maven.google.com"
     }    
 } 
 dependencies {
