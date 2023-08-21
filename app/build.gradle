@@ -1,9 +1,12 @@
-apply plugin: 'com.android.application'
-
+plugins {
+    id 'com.android.application'
+}
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
+ndkVersion '23.0.7599858'
     buildToolsVersion "29.0.3"
 
+namespace "thercn.swampy.leveleditor"
     defaultConfig {
         applicationId "thercn.swampy.leveleditor"
         minSdkVersion 16
@@ -20,9 +23,10 @@ android {
 }
 repositories {
     maven {     
-        url "https://jitpack.io"    
+        url "https://jitpack.io"
+	url "https://maven.google.com"
     }    
-}  
+} 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.0.0'

@@ -27,14 +27,13 @@ import thercn.swampy.leveleditor.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
 
 public class MainActivity extends AppCompatActivity {
-    @Override
 	private PopupWindow mPoup;
     public Activity mActivity = MainActivity.this;
     Stopwatch stopwatch = new Stopwatch();
     //long elapsedTime = stopwatch.getElapsedTime();
     static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
     String LevelsDir = APPDIR + "/Levels";
-    
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         stopwatch.start();
         super.onCreate(savedInstanceState);
