@@ -1,6 +1,7 @@
 package thercn.swampy.leveleditor;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,8 +9,6 @@ import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,30 +18,39 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
+import android.view.View.OnFocusChangeListener;
 
 public class MainActivity extends AppCompatActivity {
-	private PopupWindow mPoup;
+	
     public Activity mActivity = MainActivity.this;
-    Stopwatch stopwatch = new Stopwatch();
-    //long elapsedTime = stopwatch.getElapsedTime();
-    static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
+    public static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
+	Stopwatch stopwatch = new Stopwatch();
     String LevelsDir = APPDIR + "/Levels";
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         stopwatch.start();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+		//You can modify this if judgment to view the functionality of Chinese updates
         if (AppUtils.getLanguage() != "zh")
         {
             setContentView(R.layout.main_act_english);
         }
-		Permission.checkPermission(this);  //申请权限
+		//End
+		if (!Permission.checkPermission(this))
+		{
+			print("请同意权限申请，否则将无法在内部存储创建关卡");
+			Thread.currentThread().suspend();
+		}  
+		//申请权限
 		InitAppDir();	//检测应用文件夹
 		AppLog.WriteLog("初始化应用");
 		try {
@@ -56,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         long elapsedTime = stopwatch.getElapsedTime();
         
         AppLog.WriteLog("应用已初始化，耗时" + elapsedTime / 1000000 + "毫秒");
+		
         //throw new NullPointerException("你抛出了空指针异常");
     }
 
@@ -70,9 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
 		final EditText level_png_path = findViewById(R.id.level_png_path);
         final EditText output_img_path = findViewById(R.id.output_png_path);
-        
+        Button goto_imageeditor = findViewById(R.id.goto_image_editor);
         Button generic_png = findViewById(R.id.generic_btn);
 
+		goto_imageeditor.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					startActivity(new Intent(MainActivity.this, EditImage.class));
+				}
+			});
         generic_png.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -118,6 +134,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getExistLevel();
+	}
+
+	
 
     public void InitAppDir() {
         File Appdir = new File(APPDIR);
@@ -160,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
     }
     public void popupWindow() {
+		
+		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final Button btn1 = findViewById(R.id.new_level);
         btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -168,14 +193,10 @@ public class MainActivity extends AppCompatActivity {
                     if (v.getId() == R.id.new_level) {
                         View view = getLayoutInflater().inflate(R.layout.new_level_dialog, null);
 
-                        mPoup = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        //在弹窗外点击自动收回
-                        mPoup.setFocusable(true);
-
-                        mPoup.setElevation(100f);
-                        //显示在指定位置
-                        mPoup.showAtLocation(MainActivity.this.getWindow().getDecorView(), Gravity.CENTER, 0, 0);
-
+                        dialog.setView(view);
+						dialog.setTitle("请输入关卡信息");
+						final AlertDialog alertDialog = dialog.create();
+						alertDialog.show();
                         final EditText editlevelname = view.findViewById(R.id.edit_level_name);
                         final EditText custom_image = view.findViewById(R.id.image_path);
                         final CheckBox checkBox = view.findViewById(R.id.custom_image_btn);
@@ -217,15 +238,15 @@ public class MainActivity extends AppCompatActivity {
                                             intent.putExtra("LevelName", levelname);
                                             NewLevel.createLevelFolder(levelname);
                                             NewLevel.createLevelXMLFile(levelname);
-                                            mPoup.dismiss();
+                                            alertDialog.dismiss();
                                             startActivity(intent);
                                             return;
                                         }
                                         NewLevel.createLevelFolder(levelname);
                                         NewLevel.createLevelPNGFile(levelname);
                                         NewLevel.createLevelXMLFile(levelname);
+										alertDialog.dismiss();
                                         intent.putExtra("LevelName", levelname);
-                                        mPoup.dismiss();
                                         startActivity(intent);
 
                                     } else {

@@ -33,6 +33,15 @@
 			android:layout_toRightOf="@id/leveleditorButton2"
 			android:id="@+id/undo"/>
 
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+			android:text="重新加载图片"
+			android:layout_toRightOf="@id/undo"
+			android:textSize="10sp"
+			android:id="@+id/reload"/>
+
 	</RelativeLayout>
 
 	<RelativeLayout
@@ -45,6 +54,13 @@
 			android:layout_height="wrap_content"
 			android:text="点击位置:"
 			android:id="@+id/click"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:layout_toRightOf="@id/click"
+			android:id="@+id/dot"/>
 
 	</RelativeLayout>
 

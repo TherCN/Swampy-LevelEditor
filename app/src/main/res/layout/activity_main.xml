@@ -2,17 +2,26 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content">
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
 	<RelativeLayout
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:background="@drawable/border">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="关卡图片渲染"
+			android:id="@+id/png_render"
+			android:background="@drawable/border"/>
 
 		<EditText
 			android:layout_width="wrap_content"
 			android:ems="20"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/png_render"
 			android:id="@+id/level_png_path"
 			android:hint="原关卡PNG路径"/>
 
@@ -39,7 +48,7 @@
 			<thercn.swampy.leveleditor.TitanicTools.TitanicTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="未开始"
+				android:text="我是山里灵活的狗！"
 				android:textAppearance="?android:attr/textAppearanceMedium"
 				android:layout_toRightOf="@id/generic_btn"
 				android:id="@+id/gen_info"/>
@@ -48,16 +57,52 @@
 
 	</RelativeLayout>
 
-	<Button
-		android:layout_width="wrap_content"
+	<LinearLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="新建关卡项目"
-		android:id="@+id/new_level"/>
+		android:orientation="vertical"
+		android:background="@drawable/border">
 
-	<ListView
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="新建关卡项目"
+			android:id="@+id/new_level"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="图片编辑器"
+			android:id="@+id/goto_image_editor"/>
+
+	</LinearLayout>
+
+	<RelativeLayout
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:id="@+id/level_list"/>
+		android:layout_height="match_parent"
+		android:background="@drawable/border">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="关卡列表"
+			android:id="@+id/activitymainTextView1"
+			android:background="@drawable/border"/>
+
+		<ScrollView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/activitymainTextView1"
+			android:background="@drawable/border">
+
+			<ListView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/level_list"/>
+
+		</ScrollView>
+
+	</RelativeLayout>
 
 </LinearLayout>
 
