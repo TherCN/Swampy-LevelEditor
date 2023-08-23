@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import thercn.swampy.leveleditor.R;
 
 public class SplashActivity extends Activity {
-    
+   
     public boolean SplashActivity = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,23 +26,23 @@ public class SplashActivity extends Activity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.WHITE);
-        
+
         new Handler().postDelayed(new Runnable() {
-               
-        @Override
-         
-        public void run() {
-              
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-      
-        startActivity(intent);
-            
-        finish();
-       
-        }
-      
-        }, 1000);
-        
+
+				@Override
+
+				public void run() {
+
+					Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+
+					startActivity(intent);
+
+					finish();
+
+				}
+
+			}, 1000);
+
     }
-    
+
 }

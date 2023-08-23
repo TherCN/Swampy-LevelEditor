@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     public Activity mActivity = MainActivity.this;
     public static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
 	Stopwatch stopwatch = new Stopwatch();
-    String LevelsDir = APPDIR + "/Levels";
-	
+    public static String LevelsDir = APPDIR + "/Levels";
+	public static AppLog appLog = new AppLog(APPDIR + "SLELog.log");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         stopwatch.start();
@@ -52,18 +52,18 @@ public class MainActivity extends AppCompatActivity {
 		}  
 		//申请权限
 		InitAppDir();	//检测应用文件夹
-		AppLog.WriteLog("初始化应用");
+		appLog.WriteNormalLog("初始化应用");
 		try {
-			Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
+			Runtime.getRuntime().exec("logcat > " + APPDIR + "SLE-logcat.log");
 		} catch (IOException e) {
-			AppLog.WriteLog(e.toString());
+			appLog.WriteErrorLog(e.toString());
 		}
 		getExistLevel();
         InitLayout();
         stopwatch.stop();
         long elapsedTime = stopwatch.getElapsedTime();
         
-        AppLog.WriteLog("应用已初始化，耗时" + elapsedTime / 1000000 + "毫秒");
+        appLog.WriteNormalLog("应用已初始化，耗时" + elapsedTime / 1000000 + "毫秒");
 		
         //throw new NullPointerException("你抛出了空指针异常");
     }
@@ -147,13 +147,13 @@ public class MainActivity extends AppCompatActivity {
 		File Levelsdir = new File(LevelsDir);
         if (!Appdir.exists() || !Levelsdir.exists()) {
             Levelsdir.mkdirs();
-            AppLog.InitLogFile();
+            appLog.InitLogFile();
             AppUtils.ExportAssets(this, APPDIR + "/image/", "dirt.png");
             AppUtils.ExportAssets(this, APPDIR + "/image/", "rock.png");
             AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
             AppUtils.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
         }
-        AppLog.InitLogFile();
+        appLog.InitLogFile();
     }
 
     public void getExistLevel() {

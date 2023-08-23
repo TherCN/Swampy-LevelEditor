@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class NewLevel {
-    public static String LevelsDir = Environment.getExternalStorageDirectory().toString() + "/SLE/Levels";
+    public static String LevelsDir = MainActivity.LevelsDir;
     public static void createLevelFolder (String str){
         File levelfolder = new File(LevelsDir + "/" + str);
         if (!levelfolder.exists()) {
@@ -24,7 +24,7 @@ public class NewLevel {
         try {
             out = new FileOutputStream(pngFile);
         } catch (FileNotFoundException e) {
-            AppLog.WriteLog(e.toString());
+            MainActivity.appLog.WriteErrorLog(e.getMessage());
         }
         bitmap.compress(Bitmap.CompressFormat.PNG,100,out);
     }
@@ -37,7 +37,7 @@ public class NewLevel {
                 fwriter.flush();
                 fwriter.close();
             } catch (IOException e) {
-                AppLog.WriteLog(e.toString());
+                MainActivity.appLog.WriteErrorLog(e.getMessage());
             }
     }
 }
