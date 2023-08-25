@@ -157,7 +157,7 @@ public class AppUtils {
 
     int targetRGB = Color.rgb(r, g, b);
     Bitmap replacementBitmap =
-        BitmapFactory.decodeFile("/sdcard/Swampy/image/" + texture + ".png");
+        BitmapFactory.decodeFile("/sdcard/SLE/image/" + texture + ".png");
     int tolerance = 10;
     for (int i = 0; i < width * height; i++) {
       int x = i % width;
@@ -184,8 +184,9 @@ public class AppUtils {
       OutputStream outputimg = new FileOutputStream(outputFile);
       modifiedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputimg);
       Runtime.getRuntime().exec("rm " + levelPNGFile);
-	  } catch (FileNotFoundException | IOException e) {
-		  AppLog.WriteLog(e.getMessage());
+	  } catch ( FileNotFoundException e) {}
+      catch ( IOException e) {
+        AppLog.WriteLog(e.getMessage());
     }
   }
   // 生成的代码结束

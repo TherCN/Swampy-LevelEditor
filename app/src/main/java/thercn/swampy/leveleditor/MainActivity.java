@@ -1,15 +1,12 @@
 package thercn.swampy.leveleditor;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,7 +14,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,10 +22,10 @@ import java.io.IOException;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
+import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
 
-  public Activity mActivity = MainActivity.this;
   public static String APPDIR =
       Environment.getExternalStorageDirectory().toString() + "/SLE";
   Stopwatch stopwatch = new Stopwatch();
@@ -39,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     stopwatch.start();
     super.onCreate(savedInstanceState);
+    print("当前版本:20230825");
     setContentView(R.layout.activity_main);
     // You can modify this if judgment to view the functionality of Chinese
     // updates
@@ -176,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
   public void print(String text) {
-    Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
+    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
   }
   public void popupWindow() {
 
