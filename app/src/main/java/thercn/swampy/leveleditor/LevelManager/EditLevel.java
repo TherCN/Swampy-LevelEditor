@@ -4,29 +4,34 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import thercn.swampy.leveleditor.CustomContent.FixedListView;
+import java.util.List;
+import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.CustomContent.MyAdapter;
+import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 
 public class EditLevel extends AppCompatActivity {
 
     boolean isScrolling;
     long touchStartTime;
-
+		String OpenLevel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.level_editor);
-        final String OpenLevel = getIntent().getStringExtra("LevelName");
-
+        OpenLevel = getIntent().getStringExtra("LevelName");
         Button reload = findViewById(R.id.reload);
         reload.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -38,7 +43,7 @@ public class EditLevel extends AppCompatActivity {
         showImage(OpenLevel);
         showObjects(OpenLevel);
     }
-
+		
     public void showImage(String currentLevel) {
 
         String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
@@ -143,22 +148,24 @@ public class EditLevel extends AppCompatActivity {
     public void showObjects(String currentLevel) {
         String levelxmlPath =
             NewLevel.LevelsDir + "/" + currentLevel + "/" + currentLevel + ".xml";
-				LevelXMLParser currentLevelxml = new LevelXMLParser(levelxmlPath);
+				final LevelXMLParser currentLevelxml = new LevelXMLParser(levelxmlPath);
 				String[] Objects = currentLevelxml.getObjects();
-				ArrayAdapter<String> Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Objects);
+				final ArrayAdapter<String> Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Objects);
 				ListView ObjectList = findViewById(R.id.object_list);
+				final ListView PropertiesList = findViewById(R.id.property_list);
 				ObjectList.setAdapter(Adapter);
 
-				ListView PropertiesList = findViewById(R.id.property_list);
+				ObjectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+								@Override
+								public void onItemClick(AdapterView<?> parent, View view, int position, long itemId) {
+										AppLog.WriteLog("当前选中物体:" + Adapter.getItem(position));
+										String[][] currentObjectInfo = currentLevelxml.getObjectProperties((int)itemId);
+										MyAdapter ObjectProperties = new MyAdapter(EditLevel.this, currentObjectInfo);
+										PropertiesList.setAdapter(ObjectProperties);
+								}
+						});
     }
-
-
     public void EditProperty() {
-        FixedListView PropertyList = findViewById(R.id.property_list);
-        ArrayList<String> a = new ArrayList<>();
-        MyAdapter Adapter = new MyAdapter(this, a);
-        PropertyList.setAdapter(Adapter);
-
     }
     public void writePNG() {}
 }

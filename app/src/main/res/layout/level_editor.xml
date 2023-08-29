@@ -5,7 +5,8 @@
 	android:layout_height="match_parent"
 	android:gravity="top|left"
 	android:orientation="vertical"
-	android:background="@drawable/border">
+	android:background="@drawable/border"
+	android:fitsSystemWindows="true">
 
 	<RelativeLayout
 		android:layout_width="match_parent"
@@ -70,10 +71,10 @@
 		android:gravity="left">
 
 		<FrameLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_height="400dp"
 			android:id="@+id/leveleditorFrameLayout1"
-			android:background="@drawable/border">
+			android:background="@drawable/border"
+			android:layout_width="wrap_content">
 
 			<ScrollView
 				android:layout_width="200dp"
@@ -93,19 +94,31 @@
 
 		<RelativeLayout
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/leveleditorFrameLayout1">
+
+			<thercn.swampy.leveleditor.CustomContent.FixedListView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/property_list"/>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_toRightOf="@id/leveleditorFrameLayout1"
 			android:background="@drawable/border">
 
 			<RelativeLayout
 				android:layout_width="wrap_content"
-				android:layout_height="300dp"
+				android:layout_height="400dp"
 				android:id="@+id/leveleditorRelativeLayout1">
 
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="部件列表"
+					android:text="物体列表"
 					android:id="@+id/object_list_text"/>
 
 				<ScrollView
@@ -118,24 +131,6 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:id="@+id/object_list"/>
-
-				</ScrollView>
-
-			</RelativeLayout>
-
-			<RelativeLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/leveleditorRelativeLayout1">
-
-				<ScrollView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content">
-
-					<thercn.swampy.leveleditor.CustomContent.FixedListView
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:id="@+id/property_list"/>
 
 				</ScrollView>
 

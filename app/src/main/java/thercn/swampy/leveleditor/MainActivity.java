@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
 										public void onItemClick(AdapterView<?> adapterView, View view,
 																						int position, long id) {
 												String clickedText = adapter.getItem(position);
-												print("你点击了" + clickedText);
 												Intent intent = new Intent(MainActivity.this, EditLevel.class);
 												intent.putExtra("LevelName", clickedText);
 												startActivity(intent);

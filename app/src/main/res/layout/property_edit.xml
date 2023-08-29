@@ -10,24 +10,26 @@
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:id="@+id/PropertyName"/>
+		android:id="@+id/PropertyName"
+		android:text="属性名:"/>
 
 	<EditText
 		android:layout_width="wrap_content"
-		android:ems="4"
 		android:layout_height="wrap_content"
-		android:id="@+id/editPropertyName"/>
+		android:id="@+id/editPropertyName"
+		android:maxLines="1"/>
 
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:id="@+id/PropertyValue"/>
+		android:id="@+id/PropertyValue"
+		android:text="属性值:"/>
 
 	<EditText
 		android:layout_width="wrap_content"
-		android:ems="10"
 		android:layout_height="wrap_content"
-		android:id="@+id/editPropertyValue"/>
+		android:id="@+id/editPropertyValue"
+		android:maxLines="1"/>
 
 </LinearLayout>
 
