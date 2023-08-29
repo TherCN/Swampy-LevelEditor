@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor;
+package thercn.swampy.leveleditor.AppUtils;
 
 import android.Manifest;
 import android.app.Activity;

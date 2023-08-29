@@ -69,6 +69,13 @@
 			android:text="新建关卡项目"
 			android:id="@+id/new_level"/>
 
+		<EditText
+			android:layout_width="wrap_content"
+			android:ems="15"
+			android:layout_height="wrap_content"
+			android:hint="你可以在此自定义上面的文本"
+			android:id="@+id/custom_text"/>
+
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -95,7 +102,7 @@
 			android:layout_below="@id/activitymainTextView1"
 			android:background="@drawable/border">
 
-			<ListView
+				<thercn.swampy.leveleditor.CustomContent.FixedListView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/level_list"/>

@@ -97,24 +97,49 @@
 			android:layout_toRightOf="@id/leveleditorFrameLayout1"
 			android:background="@drawable/border">
 
-			<TextView
+			<RelativeLayout
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="部件列表"
-				android:id="@+id/object_list_text"/>
+				android:layout_height="300dp"
+				android:id="@+id/leveleditorRelativeLayout1">
 
-			<ScrollView
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_below="@id/object_list_text"
-				android:id="@+id/object_list_view">
-
-				<ListView
+				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:id="@+id/object_list"/>
+					android:text="部件列表"
+					android:id="@+id/object_list_text"/>
 
-			</ScrollView>
+				<ScrollView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/object_list_text"
+					android:id="@+id/object_list_view">
+
+					<thercn.swampy.leveleditor.CustomContent.FixedListView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:id="@+id/object_list"/>
+
+				</ScrollView>
+
+			</RelativeLayout>
+
+			<RelativeLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/leveleditorRelativeLayout1">
+
+				<ScrollView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content">
+
+					<thercn.swampy.leveleditor.CustomContent.FixedListView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:id="@+id/property_list"/>
+
+				</ScrollView>
+
+			</RelativeLayout>
 
 		</RelativeLayout>
 

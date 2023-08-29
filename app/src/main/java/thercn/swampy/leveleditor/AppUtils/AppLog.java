@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor;
+package thercn.swampy.leveleditor.AppUtils;
 
 import android.icu.text.SimpleDateFormat;
 import android.util.Log;
@@ -6,12 +6,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import thercn.swampy.leveleditor.MainActivity;
 
 public class AppLog {
   static File Logfile = new File(MainActivity.APPDIR + "/SLELog.log");
-  static File Logcat_Log = new File(MainActivity.APPDIR + "/SLELog-Logcat.log");
+  public static File Logcat_Log = new File(MainActivity.APPDIR + "/SLELog-Logcat.log");
 
-  static void InitLogFile() {
+  public static void InitLogFile() {
 
     if (!Logfile.exists()) {
       try {
@@ -28,7 +29,7 @@ public class AppLog {
       }
     }
   }
-  static <T> void WriteLog(T string) {
+  public static <T> void WriteLog(T string) {
     String str = String.valueOf(string);
     if (string instanceof String != true) {
       str = String.valueOf(string);

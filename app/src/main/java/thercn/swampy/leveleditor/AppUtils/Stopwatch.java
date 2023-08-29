@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor;
+package thercn.swampy.leveleditor.AppUtils;
 
 public class Stopwatch {
   private long startTime;

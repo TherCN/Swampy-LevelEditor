@@ -1,13 +1,13 @@
-package thercn.swampy.leveleditor;
+package thercn.swampy.leveleditor.CustomContent;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 
 public class SplashActivity extends Activity {

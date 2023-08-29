@@ -27,7 +27,7 @@ public class PackageLevelHandler extends SQLiteOpenHelper {
   private static final String kLikeCount = "like_count";
   private static final String kPackageId = "packageId";
   private static final String kPackageName = "packageName";
-  private static final String kUniqueId = "uniqueId";
+  //private static final String kUniqueId = "uniqueId";
   private static final String kUserLikes = "user_likes";
   private SQLiteDatabase dbo;
 
