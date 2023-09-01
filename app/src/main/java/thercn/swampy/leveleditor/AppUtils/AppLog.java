@@ -29,18 +29,13 @@ public class AppLog {
       }
     }
   }
-  public static <T> void WriteLog(T string) {
-    String str = String.valueOf(string);
-    if (string instanceof String != true) {
-      str = String.valueOf(string);
-    }
-
+  public static void WriteLog(Object string){
     try {
       FileWriter WriteLogText = new FileWriter(Logfile, true);
       SimpleDateFormat formatter =
           new SimpleDateFormat("'['yyyy-MM-dd HH:mm:ss']'");
       Date date = new Date(System.currentTimeMillis());
-      WriteLogText.write(formatter.format(date) + str + "\n");
+      WriteLogText.write(formatter.format(date) + string + "\n");
       WriteLogText.flush();
       WriteLogText.close();
     } catch (IOException e) {

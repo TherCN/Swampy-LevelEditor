@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor.CustomContent;
+package thercn.swampy.leveleditor.CustomWidget;
 
 import android.content.Context;
 import android.util.AttributeSet;

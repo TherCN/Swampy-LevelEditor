@@ -45,7 +45,7 @@
 				android:text="生成"
 				android:id="@+id/generic_btn"/>
 
-			<thercn.swampy.leveleditor.TitanicTools.TitanicTextView
+				<thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.TitanicTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="我是山里灵活的狗！"
@@ -102,7 +102,7 @@
 			android:layout_below="@id/activitymainTextView1"
 			android:background="@drawable/border">
 
-				<thercn.swampy.leveleditor.CustomContent.FixedListView
+				<thercn.swampy.leveleditor.CustomWidget.FixedListView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/level_list"/>

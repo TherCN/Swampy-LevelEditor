@@ -2,91 +2,92 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="top|left"
-	android:orientation="vertical"
 	android:background="@drawable/border"
-	android:fitsSystemWindows="true">
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="true"
+	android:gravity="top|left"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical">
 
 	<RelativeLayout
 		android:layout_width="match_parent"
+		android:background="@drawable/border"
 		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:background="@drawable/border">
+		android:gravity="center">
 
 		<Button
 			android:layout_width="wrap_content"
+			android:id="@+id/reload"
 			android:layout_height="wrap_content"
-			android:text="保存"
-			android:id="@+id/save"/>
+			android:text="重新加载"
+			android:textSize="10sp"/>
 
 		<Button
 			android:layout_width="wrap_content"
+			android:id="@+id/undo"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/reload"
+			android:text="撤销"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:id="@+id/redo"
 			android:layout_height="wrap_content"
 			android:text="重做"
-			android:layout_toRightOf="@id/save"
-			android:id="@+id/leveleditorButton2"/>
+			android:layout_toRightOf="@id/undo"/>
 
 		<Button
 			android:layout_width="wrap_content"
+			android:id="@+id/save"
 			android:layout_height="wrap_content"
-			android:text="撤销"
-			android:layout_toRightOf="@id/leveleditorButton2"
-			android:id="@+id/undo"/>
-
-		<Button
-			android:layout_width="wrap_content"
-			style="?android:attr/buttonStyleSmall"
-			android:layout_height="wrap_content"
-			android:text="重新加载图片"
-			android:layout_toRightOf="@id/undo"
-			android:textSize="10sp"
-			android:id="@+id/reload"/>
+			android:layout_toRightOf="@id/redo"
+			android:text="保存"/>
 
 	</RelativeLayout>
 
 	<RelativeLayout
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:background="@drawable/border">
+		android:background="@drawable/border"
+		android:layout_height="wrap_content">
 
 		<TextView
 			android:layout_width="wrap_content"
+			android:id="@+id/click"
 			android:layout_height="wrap_content"
-			android:text="点击位置:"
-			android:id="@+id/click"/>
+			android:text="点击位置:"/>
 
 		<TextView
 			android:layout_width="wrap_content"
+			android:id="@+id/dot"
 			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:layout_toRightOf="@id/click"
-			android:id="@+id/dot"/>
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
 
 	</RelativeLayout>
 
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:gravity="left">
+		android:gravity="left"
+		android:id="@+id/parlay">
 
 		<FrameLayout
-			android:layout_height="400dp"
-			android:id="@+id/leveleditorFrameLayout1"
 			android:background="@drawable/border"
-			android:layout_width="wrap_content">
+			android:layout_width="wrap_content"
+			android:id="@+id/leveleditorFrameLayout1"
+			android:layout_height="400dp">
 
 			<ScrollView
 				android:layout_width="200dp"
 				android:layout_height="wrap_content">
 
-				<ImageView
+				<thercn.swampy.leveleditor.CustomWidget.ObjectView
 					android:layout_width="200dp"
-					android:layout_height="wrap_content"
-					android:text="Text"
+					android:adjustViewBounds="true"
 					android:id="@+id/level_image"
+					android:layout_height="wrap_content"
 					android:scaleType="centerCrop"
-					android:adjustViewBounds="true"/>
+					android:text="Text"/>
 
 			</ScrollView>
 
@@ -97,40 +98,74 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@id/leveleditorFrameLayout1">
 
-			<thercn.swampy.leveleditor.CustomContent.FixedListView
+			<ScrollView
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/property_list"/>
+				android:id="@+id/ScrollView"
+				android:layout_height="wrap_content">
+
+				<RelativeLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content">
+
+					<thercn.swampy.leveleditor.CustomWidget.FixedListView
+						android:layout_width="wrap_content"
+						android:id="@+id/property_list"
+						android:layout_height="wrap_content"/>
+
+					<Button
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="添加属性"
+						android:layout_below="@id/property_list"
+						android:id="@+id/add_property"/>
+
+				</RelativeLayout>
+
+			</ScrollView>
 
 		</RelativeLayout>
 
 		<RelativeLayout
 			android:layout_width="match_parent"
+			android:background="@drawable/border"
 			android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/leveleditorFrameLayout1"
-			android:background="@drawable/border">
+			android:layout_toRightOf="@id/leveleditorFrameLayout1">
 
 			<RelativeLayout
 				android:layout_width="wrap_content"
-				android:layout_height="400dp"
-				android:id="@+id/leveleditorRelativeLayout1">
+				android:id="@+id/leveleditorRelativeLayout1"
+				android:layout_height="400dp">
 
 				<TextView
 					android:layout_width="wrap_content"
+					android:id="@+id/object_list_text"
 					android:layout_height="wrap_content"
-					android:text="物体列表"
-					android:id="@+id/object_list_text"/>
+					android:text="物体列表"/>
 
 				<ScrollView
 					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
 					android:layout_below="@id/object_list_text"
-					android:id="@+id/object_list_view">
+					android:id="@+id/object_list_view"
+					android:layout_height="wrap_content">
 
-					<thercn.swampy.leveleditor.CustomContent.FixedListView
+					<RelativeLayout
 						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:id="@+id/object_list"/>
+						android:layout_below="@id/object_list_text"
+						android:layout_height="wrap_content">
+
+						<thercn.swampy.leveleditor.CustomWidget.FixedListView
+							android:layout_width="wrap_content"
+							android:id="@+id/object_list"
+							android:layout_height="wrap_content"/>
+
+						<Button
+							android:layout_width="wrap_content"
+							android:layout_below="@id/object_list"
+							android:layout_height="wrap_content"
+							android:text="添加物体"
+							android:id="@+id/add_object"/>
+
+					</RelativeLayout>
 
 				</ScrollView>
 

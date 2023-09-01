@@ -22,15 +22,15 @@ import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.AppUtils.AppTools;
 import thercn.swampy.leveleditor.AppUtils.Permission;
 import thercn.swampy.leveleditor.AppUtils.Stopwatch;
-import thercn.swampy.leveleditor.CustomContent.FixedListView;
+import thercn.swampy.leveleditor.CustomWidget.FixedListView;
 import thercn.swampy.leveleditor.ImageModify.EditImage;
 import thercn.swampy.leveleditor.ImageModify.ImageUtils;
-import thercn.swampy.leveleditor.LevelManager.EditLevel;
+import thercn.swampy.leveleditor.LevelManager.LevelEditor;
 import thercn.swampy.leveleditor.LevelManager.NewLevel;
 import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
-import thercn.swampy.leveleditor.TitanicTools.Titanic;
-import thercn.swampy.leveleditor.TitanicTools.TitanicTextView;
+import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.Titanic;
+import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.TitanicTextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
 		String LevelsDir = APPDIR + "/Levels";
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
-				stopwatch.start();
 				super.onCreate(savedInstanceState);
-				print("当前版本:20230829-" + BuildConfig.BUILD_TYPE);
+				print("当前版本:20230901");
 				setContentView(R.layout.activity_main);
 				// You can modify this if judgment to view the functionality of Chinese updates
 				if (AppTools.getLanguage() != "zh") {
@@ -59,15 +58,10 @@ public class MainActivity extends AppCompatActivity {
 				try {
 						Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
 				} catch (IOException e) {
-						AppLog.WriteLog(e.toString());
+						AppLog.WriteLog(e.getMessage());
 				}
 				getExistLevel();
 				InitLayout();
-				stopwatch.stop();
-				long elapsedTime = stopwatch.getElapsedTime();
-
-				AppLog.WriteLog("应用已初始化，耗时" + elapsedTime / 1000000 + "毫秒");
-
 				// throw new NullPointerException("你抛出了空指针异常");
 		}
 
@@ -188,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 										public void onItemClick(AdapterView<?> adapterView, View view,
 																						int position, long id) {
 												String clickedText = adapter.getItem(position);
-												Intent intent = new Intent(MainActivity.this, EditLevel.class);
+												Intent intent = new Intent(MainActivity.this, LevelEditor.class);
 												intent.putExtra("LevelName", clickedText);
 												startActivity(intent);
 										}
@@ -241,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 																		String levelname = editlevelname.getText().toString();
 
 																		if (!levelname.isEmpty()) {
-																				Intent intent = new Intent(MainActivity.this, EditLevel.class);
+																				Intent intent = new Intent(MainActivity.this, LevelEditor.class);
 
 																				File LevelDir = new File(LevelsDir + "/" + levelname);
 

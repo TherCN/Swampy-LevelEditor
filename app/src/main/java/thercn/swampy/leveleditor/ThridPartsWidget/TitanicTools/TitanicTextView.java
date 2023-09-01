@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor.TitanicTools;
+package thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools;
 
 import android.content.Context;
 import android.content.res.AssetManager;

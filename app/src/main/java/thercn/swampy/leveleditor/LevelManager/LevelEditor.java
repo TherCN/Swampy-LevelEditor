@@ -1,4 +1,5 @@
 package thercn.swampy.leveleditor.LevelManager;
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -7,22 +8,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import thercn.swampy.leveleditor.AppUtils.AppLog;
-import thercn.swampy.leveleditor.CustomContent.MyAdapter;
+import thercn.swampy.leveleditor.AppUtils.AppTools;
+import thercn.swampy.leveleditor.CustomWidget.MyAdapter;
+import thercn.swampy.leveleditor.CustomWidget.ObjectView;
+import thercn.swampy.leveleditor.LevelManager.LevelEditor;
 import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
+import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText;
+//import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText.SpinnerEditText;
 
-public class EditLevel extends AppCompatActivity {
+
+public class LevelEditor extends AppCompatActivity {
 
     boolean isScrolling;
     long touchStartTime;
@@ -43,7 +46,7 @@ public class EditLevel extends AppCompatActivity {
         showImage(OpenLevel);
         showObjects(OpenLevel);
     }
-		
+
     public void showImage(String currentLevel) {
 
         String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
@@ -60,15 +63,28 @@ public class EditLevel extends AppCompatActivity {
         Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
         final TextView point = findViewById(R.id.dot);
         final TextView ClickLocation = findViewById(R.id.click);
-        final ImageView level_image = findViewById(R.id.level_image);
-        level_image.setImageBitmap(levelimage);
+        final ObjectView level_image = findViewById(R.id.level_image);
+				String[] path = {"/sdcard/a.png","/sdcard/b.png"},names = {"a","b"};
+				double location[][] = {{20,10},{50,70}};
+
+				level_image.setData(path, names, location); // 设置小图片的路径、名字和位置。
+
+				level_image.setOnObjectViewClickedListener(new ObjectView.OnObjectViewClickedListener() {
+								@Override
+								public void onObjectViewClicked(String name) {
+										// 当点击小图片时执行的代码。
+										AppTools.printText(LevelEditor.this, "You clicked the object: " + name);
+								}
+						});
+				level_image.setImageBitmap(levelimage);
 
         ClickLocation.setTextSize(10);
-        level_image.setOnTouchListener(new View.OnTouchListener() {
+	      level_image.setOnTouchListener(new View.OnTouchListener() {
                 double[] lastPos = {0, 0};
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+										level_image.onTouchEvent(event);
                     float x = event.getX();
                     float y = event.getY();
                     point.setText("");
@@ -130,6 +146,8 @@ public class EditLevel extends AppCompatActivity {
                     }
                 }
             });
+
+
     }
     //这里我自己定义了一个单位"gl"，全名Game Location，也就是游戏内的坐标
     public double[] dp2gl(double x, double y) {
@@ -143,8 +161,6 @@ public class EditLevel extends AppCompatActivity {
         double[] a = {0.001,0.001};
         return a;
     }
-    public void addPoint(View v) {}
-    public void writeXML() {}
     public void showObjects(String currentLevel) {
         String levelxmlPath =
             NewLevel.LevelsDir + "/" + currentLevel + "/" + currentLevel + ".xml";
@@ -158,14 +174,53 @@ public class EditLevel extends AppCompatActivity {
 				ObjectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 								@Override
 								public void onItemClick(AdapterView<?> parent, View view, int position, long itemId) {
-										AppLog.WriteLog("当前选中物体:" + Adapter.getItem(position));
 										String[][] currentObjectInfo = currentLevelxml.getObjectProperties((int)itemId);
-										MyAdapter ObjectProperties = new MyAdapter(EditLevel.this, currentObjectInfo);
+										MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 										PropertiesList.setAdapter(ObjectProperties);
 								}
 						});
+				final Button add_object = findViewById(R.id.add_object);
+				add_object.setOnClickListener(new View.OnClickListener() {
+
+								@Override
+								public void onClick(View view) {
+										addObjectDialog();
+								}
+						});
     }
+
+		public void addObjectDialog() {
+				AlertDialog.Builder newObjectDialog = new AlertDialog.Builder(this);
+				View view =
+						getLayoutInflater().inflate(R.layout.add_object, null);
+
+				newObjectDialog.setView(view);
+				final SpinnerEditText ObjectSelect = findViewById(R.id.objectFile);
+				final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,getObjectFiles());
+				ObjectSelect.setAdapter(adapter);
+				
+				
+				
+				newObjectDialog.setTitle("请输入物体信息");
+				AlertDialog Dialog = newObjectDialog.create();
+
+				
+				Dialog.show();
+		}
+		public String[] getObjectFiles() {
+				File[] files = new File(MainActivity.APPDIR + "/Objects/").listFiles();
+				if (files != null) {
+						String[] fileNames = new String[files.length];
+						for (int i = 0; i < files.length; i++) {
+								fileNames[i] = files[i].getName();
+								//AppLog.WriteLog(fileNames[i]);
+						}
+						return fileNames;
+				}
+				return null;
+		}
     public void EditProperty() {
     }
     public void writePNG() {}
+		
 }

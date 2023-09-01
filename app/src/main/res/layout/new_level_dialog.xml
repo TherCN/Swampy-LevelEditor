@@ -7,6 +7,7 @@
 	style="@style/AppTheme.PopupOverlay"
 	android:id="@+id/nld_layout_id">
 
+
 	<EditText
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

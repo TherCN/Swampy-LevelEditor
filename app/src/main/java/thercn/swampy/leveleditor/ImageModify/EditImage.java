@@ -2,7 +2,7 @@ package thercn.swampy.leveleditor.ImageModify;
 
 import android.app.Activity;
 import android.os.Bundle;
-import thercn.swampy.leveleditor.CustomContent.ImageEditorView;
+import thercn.swampy.leveleditor.CustomWidget.ImageEditorView;
 import thercn.swampy.leveleditor.R;
 
 public class EditImage extends Activity {

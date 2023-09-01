@@ -1,4 +1,4 @@
-package thercn.swampy.leveleditor.CustomContent;
+package thercn.swampy.leveleditor.CustomWidget;
 
 // generic by ChatGPT
 import android.content.Context;
