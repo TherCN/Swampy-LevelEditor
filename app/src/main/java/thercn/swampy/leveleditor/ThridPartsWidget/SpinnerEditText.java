@@ -5,18 +5,19 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import androidx.appcompat.widget.AppCompatEditText;
 import thercn.swampy.leveleditor.R;
 
-public class SpinnerEditText extends EditText implements AdapterView.OnItemClickListener, PopupWindow.OnDismissListener {
+public class SpinnerEditText extends AppCompatEditText implements AdapterView.OnItemClickListener, PopupWindow.OnDismissListener {
 
     private Drawable mDrawable; // 显示的图
     private PopupWindow mPopupWindow; // 点击图片弹出的popWindow对象
@@ -95,7 +96,8 @@ public class SpinnerEditText extends EditText implements AdapterView.OnItemClick
         setCompoundDrawables(getCompoundDrawables()[0], getCompoundDrawables()[1], mDrawable, getCompoundDrawables()[3]);
     }
 
-    public void setAdapter(BaseAdapter adapter) {
+    public void setAdapter(ArrayAdapter adapter) {
+				Log.e("SLE","传入适配器:" + adapter.toString());
         mPopListView.setAdapter(adapter);
     }
 

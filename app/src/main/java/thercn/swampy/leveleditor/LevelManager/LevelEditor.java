@@ -3,6 +3,7 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,8 +14,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import thercn.swampy.leveleditor.AppUtils.AppTools;
 import thercn.swampy.leveleditor.CustomWidget.MyAdapter;
 import thercn.swampy.leveleditor.CustomWidget.ObjectView;
@@ -22,6 +21,7 @@ import thercn.swampy.leveleditor.LevelManager.LevelEditor;
 import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText;
+import android.widget.EditText;
 //import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText.SpinnerEditText;
 
 
@@ -30,6 +30,7 @@ public class LevelEditor extends AppCompatActivity {
     boolean isScrolling;
     long touchStartTime;
 		String OpenLevel;
+		LevelXMLParser currentLevel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,15 @@ public class LevelEditor extends AppCompatActivity {
         showObjects(OpenLevel);
     }
 
+		@Override
+		protected void onResume() {
+				super.onResume();
+				Scanner
+				showImage(OpenLevel);
+        showObjects(OpenLevel);
+		}
+
+		
     public void showImage(String currentLevel) {
 
         String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
@@ -161,11 +171,11 @@ public class LevelEditor extends AppCompatActivity {
         double[] a = {0.001,0.001};
         return a;
     }
-    public void showObjects(String currentLevel) {
+    public void showObjects(String currentLevelFile) {
         String levelxmlPath =
-            NewLevel.LevelsDir + "/" + currentLevel + "/" + currentLevel + ".xml";
-				final LevelXMLParser currentLevelxml = new LevelXMLParser(levelxmlPath);
-				String[] Objects = currentLevelxml.getObjects();
+            NewLevel.LevelsDir + "/" + currentLevelFile + "/" + currentLevelFile + ".xml";
+				currentLevel = new LevelXMLParser(levelxmlPath);
+				String[] Objects = currentLevel.getObjects();
 				final ArrayAdapter<String> Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Objects);
 				ListView ObjectList = findViewById(R.id.object_list);
 				final ListView PropertiesList = findViewById(R.id.property_list);
@@ -174,7 +184,7 @@ public class LevelEditor extends AppCompatActivity {
 				ObjectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 								@Override
 								public void onItemClick(AdapterView<?> parent, View view, int position, long itemId) {
-										String[][] currentObjectInfo = currentLevelxml.getObjectProperties((int)itemId);
+										String[][] currentObjectInfo = currentLevel.getObjectProperties((int)itemId);
 										MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 										PropertiesList.setAdapter(ObjectProperties);
 								}
@@ -184,35 +194,68 @@ public class LevelEditor extends AppCompatActivity {
 
 								@Override
 								public void onClick(View view) {
-										addObjectDialog();
+										addObjectDialog(currentLevel);
 								}
 						});
+
+
+
     }
 
-		public void addObjectDialog() {
+		public void addObjectDialog(final LevelXMLParser level) {
 				AlertDialog.Builder newObjectDialog = new AlertDialog.Builder(this);
 				View view =
 						getLayoutInflater().inflate(R.layout.add_object, null);
 
 				newObjectDialog.setView(view);
-				final SpinnerEditText ObjectSelect = findViewById(R.id.objectFile);
-				final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,getObjectFiles());
-				ObjectSelect.setAdapter(adapter);
-				
-				
-				
+				final SpinnerEditText ObjectFile = view.findViewById(R.id.objectFile);
+				final EditText ObjectName = view.findViewById(R.id.objectName);
+				final Button addObject = view.findViewById(R.id.addObject);
+				final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getObjectFiles());
+				ObjectFile.setAdapter(adapter);
 				newObjectDialog.setTitle("请输入物体信息");
-				AlertDialog Dialog = newObjectDialog.create();
-
-				
+				final AlertDialog Dialog = newObjectDialog.create();
 				Dialog.show();
+				addObject.setOnClickListener(new View.OnClickListener() {
+
+								@Override
+								public void onClick(View view) {
+										if (ObjectName.getText().toString().isEmpty()) {
+												AppTools.printText(LevelEditor.this, "物体名字为空！");
+												return;
+										}
+										if (ObjectFile.getText().toString().isEmpty()) {
+												AppTools.printText(LevelEditor.this, "物体文件为空！");
+												return;
+										}
+										for (int i = 0; i < level.getObjects().length; i++) {
+												if (ObjectName.getText().toString() == level.getObjects()[i]) {
+														AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
+														return;
+												} 
+												
+										}
+										if (level.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString()))
+										{
+										level.saveModifyToFile();
+										AppTools.printText(LevelEditor.this,"添加成功" + ObjectName.getText().toString());
+										Dialog.dismiss();
+										showObjects(OpenLevel);
+										}
+								}
+
+
+						});
+
+
 		}
+		
 		public String[] getObjectFiles() {
 				File[] files = new File(MainActivity.APPDIR + "/Objects/").listFiles();
 				if (files != null) {
 						String[] fileNames = new String[files.length];
 						for (int i = 0; i < files.length; i++) {
-								fileNames[i] = files[i].getName();
+								fileNames[i] = "/Objects/" + files[i].getName();
 								//AppLog.WriteLog(fileNames[i]);
 						}
 						return fileNames;
@@ -222,5 +265,5 @@ public class LevelEditor extends AppCompatActivity {
     public void EditProperty() {
     }
     public void writePNG() {}
-		
+
 }

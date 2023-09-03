@@ -307,8 +307,7 @@ public class LevelXMLParser {
 		// 仅限Linux系统
 		public boolean fixObjects() {
 				try {
-						Runtime.getRuntime().exec("sed -i s|<Objects>||g " + xmlFile.toString());
-						Runtime.getRuntime().exec("sed -i 2i<Objects>\n " + xmlFile.toString());
+						Runtime.getRuntime().exec("sed -i \"1s|<Objects>|\n<Objects>\n|g\" " + xmlFile.toString());
 						return true;
 				} catch (IOException e) {
 
@@ -320,11 +319,11 @@ public class LevelXMLParser {
 				try {
 						TransformerFactory transformerFactory = TransformerFactory.newInstance();
 						Transformer transformer = transformerFactory.newTransformer();
-						transformer.setOutputProperty(OutputKeys.INDENT, "no");
+						transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 						DOMSource source = new DOMSource(document);
 						StreamResult result = new StreamResult(xmlFile);
 						transformer.transform(source, result);
-						fixObjects();
+						//fixObjects();
 						return true;
 				} catch (TransformerException e) {
 						AppLog.WriteLog(e.getMessage());

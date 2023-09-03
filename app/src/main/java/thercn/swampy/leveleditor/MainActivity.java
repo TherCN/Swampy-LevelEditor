@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 				super.onCreate(savedInstanceState);
-				print("当前版本:20230901");
+				print("当前版本:20230903");
 				setContentView(R.layout.activity_main);
 				// You can modify this if judgment to view the functionality of Chinese updates
 				if (AppTools.getLanguage() != "zh") {
@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
 				}
 				// 申请权限
 				InitAppDir(); // 检测应用文件夹
-				AppLog.WriteLog("初始化应用");
 				try {
 						Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
 				} catch (IOException e) {

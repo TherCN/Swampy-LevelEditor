@@ -37,7 +37,7 @@ public class NewLevel {
 						FileWriter fwriter = new FileWriter(xmlFile, true);
 						fwriter.write("<?xml version=\""
 													+ "1.0\" encoding=\""
-													+ "utf-8?>\n");
+													+ "utf-8\"?>\n");
 						fwriter.write("<Objects>\n");
 						fwriter.write("</Objects>\n");
 						fwriter.flush();
