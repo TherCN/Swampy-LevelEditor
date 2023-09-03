@@ -51,7 +51,6 @@ public class LevelEditor extends AppCompatActivity {
 		@Override
 		protected void onResume() {
 				super.onResume();
-				Scanner
 				showImage(OpenLevel);
         showObjects(OpenLevel);
 		}
