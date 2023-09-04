@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
 				File Appdir = new File(APPDIR);
 				File Levelsdir = new File(LevelsDir);
 				File ObjectsDir = new File(APPDIR + "/Objects/");
-				if (!Appdir.exists() || !Levelsdir.exists() || !ObjectsDir.exists()) {
+				int FileNum = Appdir.listFiles().length;
+				if (FileNum != 8) {
 						Levelsdir.mkdirs();
 						ObjectsDir.mkdirs();
 						AppLog.InitLogFile();
@@ -159,10 +160,11 @@ public class MainActivity extends AppCompatActivity {
 						}
 						AppTools.ExportAssets(this, APPDIR + "/image/", "dirt.png");
 						AppTools.ExportAssets(this, APPDIR + "/image/", "rock.png");
+						AppTools.ExportAssets(this, APPDIR, "test1.png");
+						AppTools.ExportAssets(this, APPDIR, "test2.png");
 						AppTools.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
 						AppTools.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
 				}
-				AppLog.InitLogFile();
 		}
 
 		public void getExistLevel() {

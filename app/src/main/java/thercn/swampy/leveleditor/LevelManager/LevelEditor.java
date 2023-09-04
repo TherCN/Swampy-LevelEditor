@@ -73,7 +73,7 @@ public class LevelEditor extends AppCompatActivity {
         final TextView point = findViewById(R.id.dot);
         final TextView ClickLocation = findViewById(R.id.click);
         final ObjectView level_image = findViewById(R.id.level_image);
-				String[] path = {"/sdcard/a.png","/sdcard/b.png"},names = {"a","b"};
+				String[] path = {"/sdcard/SLE/test1.png","/sdcard/SLE/test2.png"},names = {"a","b"};
 				double location[][] = {{20,10},{50,70}};
 
 				level_image.setData(path, names, location); // 设置小图片的路径、名字和位置。
