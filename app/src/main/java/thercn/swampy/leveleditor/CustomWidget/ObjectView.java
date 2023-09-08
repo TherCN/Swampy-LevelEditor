@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -14,10 +15,11 @@ public class ObjectView extends ImageView {
     private String[] mSmallImagePaths;
     private String[] mSmallImageNames;
     private double[][] mSmallImagePositions;
+	private double[] mSmallImageAngles;
     private OnObjectViewClickedListener mListener;
-		private int mClickedIndex;
-		private Bitmap ClickedImage[];
-		private long touchStartTime;
+	private int mClickedIndex;
+	private Bitmap ClickedImage[];
+	private long touchStartTime;
     public ObjectView(Context context) {
         super(context);
     }
@@ -34,7 +36,8 @@ public class ObjectView extends ImageView {
         mListener = listener;
     }
 
-    public void setData(String[] smallImagePaths, String[] smallImageNames, double[][] smallImagePositions) {
+    public void setData(String[] smallImagePaths, String[] smallImageNames, double[][] smallImagePositions, double[] samllImageAngles) {
+		mSmallImageAngles = samllImageAngles;
         mSmallImagePaths = smallImagePaths;
         mSmallImageNames = smallImageNames;
         mSmallImagePositions = smallImagePositions;
@@ -43,54 +46,66 @@ public class ObjectView extends ImageView {
         invalidate(); // 重新绘制视图，以显示新的数据。
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (mSmallImagePaths == null || mSmallImagePaths.length == 0) {
-            return;
-        }
-        Paint paint = new Paint();
-				ClickedImage = new Bitmap[mSmallImageCount];
-        for (int i = 0; i < mSmallImageCount; i++) {
-            ClickedImage[i] = BitmapFactory.decodeFile(mSmallImagePaths[i]);
-            canvas.drawBitmap(ClickedImage[i], (float) mSmallImagePositions[i][0], (float) mSmallImagePositions[i][1], paint);
-        }
-    }
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		if (mSmallImagePaths == null || mSmallImagePaths.length == 0) {
+			return;
+		}
+		Paint paint = new Paint();
+		ClickedImage = new Bitmap[mSmallImageCount];
+
+		float centerX = canvas.getWidth() / 2.0f;
+		float centerY = canvas.getHeight() / 2.0f;
+		for (int i = 0; i < mSmallImageCount; i++) {
+			ClickedImage[i] = BitmapFactory.decodeFile(mSmallImagePaths[i]);
+			Matrix matrix = new Matrix();
+			matrix.postRotate((float) -mSmallImageAngles[i]);
+			double x = centerX - ClickedImage[i].getWidth() / 2;
+			double y = centerY - ClickedImage[i].getHeight() / 2;
+
+			matrix.postTranslate((float)(x - -5.5555555555555 * mSmallImagePositions[i][0]), (float)(y - 5.5555541666666 * mSmallImagePositions[i][1]));
+			canvas.drawBitmap(ClickedImage[i], matrix, paint);
+		}
+	}
+	
+	
+	
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-				switch (event.getAction()) {
-						case MotionEvent.ACTION_DOWN:
-								touchStartTime = System.currentTimeMillis();
-								for (int i = 0; i < mSmallImageCount; i++) {
-										double[] position = mSmallImagePositions[i];
-										if (event.getX() > (float) position[0] && event.getX() < ((float) position[0] + ClickedImage[i].getHeight()) 
-												&& event.getY() > (float) position[1] && event.getY() < ((float) position[1]) + ClickedImage[i].getWidth()) {
-												mClickedIndex = i; // 记录点击的索引
-												if (mListener != null) {
-														mListener.onObjectViewClicked(mSmallImageNames[mClickedIndex]);
-												}
-												invalidate(); // 重新绘制视图，以更新点击状态
-												return true;
-										}
+		switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				touchStartTime = System.currentTimeMillis();
+				for (int i = 0; i < mSmallImageCount; i++) {
+					double[] position = mSmallImagePositions[i];
+					if (event.getX() > (float) position[0] && event.getX() < ((float) position[0] + ClickedImage[i].getHeight()) 
+						&& event.getY() > (float) position[1] && event.getY() < ((float) position[1]) + ClickedImage[i].getWidth()) {
+						mClickedIndex = i; // 记录点击的索引
+						if (mListener != null) {
+							mListener.onObjectViewClicked(mSmallImageNames[mClickedIndex]);
+						}
+						invalidate(); // 重新绘制视图，以更新点击状态
+						return true;
+					}
 
-								}
-								break;
-						case MotionEvent.ACTION_MOVE:
-								if (mClickedIndex >= 0 && mClickedIndex < mSmallImageCount && System.currentTimeMillis() - touchStartTime > 500) {
-										double[] position = mSmallImagePositions[mClickedIndex];
-										position[0] = event.getX() - ClickedImage[mClickedIndex].getWidth() / 2;
-										position[1] = event.getY() - ClickedImage[mClickedIndex].getHeight() / 2;
-										invalidate(); // 重新绘制视图，以更新位置
-								}
-								break;
-						case MotionEvent.ACTION_UP:
-								mClickedIndex = -1; // 重置点击索引
-								invalidate(); // 重新绘制视图，以取消点击状态
-								break;
 				}
-				return false;
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if (mClickedIndex >= 0 && mClickedIndex < mSmallImageCount && System.currentTimeMillis() - touchStartTime > 500) {
+					double[] position = mSmallImagePositions[mClickedIndex];
+					position[0] = event.getX() - ClickedImage[mClickedIndex].getWidth() / 2;
+					position[1] = event.getY() - ClickedImage[mClickedIndex].getHeight() / 2;
+					invalidate(); // 重新绘制视图，以更新位置
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				mClickedIndex = -1; // 重置点击索引
+				invalidate(); // 重新绘制视图，以取消点击状态
+				break;
 		}
+		return false;
+	}
 
     @Override
     protected void dispatchDraw(Canvas canvas) {

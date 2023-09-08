@@ -31,6 +31,7 @@ public class AppTools {
             } else {
                 file = new File(outputDirectory + File.separator + zipEntry.getName());
                 if (isReWrite || !file.exists()) {
+					file.getParentFile().mkdirs();
                     file.createNewFile();
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     while ((count = zipInputStream.read(buffer)) > 0) {

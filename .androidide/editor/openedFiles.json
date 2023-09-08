@@ -1,0 +1,35 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AppProjects/Swampy-LevelEditor/app/build.gradle",
+      "selection": {
+        "end": {
+          "column": 22,
+          "index": -1,
+          "line": 27
+        },
+        "start": {
+          "column": 22,
+          "index": -1,
+          "line": 27
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AppProjects/Swampy-LevelEditor/app/src/main/AndroidManifest.xml",
+      "selection": {
+        "end": {
+          "column": 62,
+          "index": -1,
+          "line": 2
+        },
+        "start": {
+          "column": 62,
+          "index": -1,
+          "line": 2
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AppProjects/Swampy-LevelEditor/app/src/main/AndroidManifest.xml"
+}

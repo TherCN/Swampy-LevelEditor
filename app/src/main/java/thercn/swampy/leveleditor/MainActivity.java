@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.AppUtils.AppTools;
-import thercn.swampy.leveleditor.AppUtils.Permission;
 import thercn.swampy.leveleditor.AppUtils.Stopwatch;
 import thercn.swampy.leveleditor.CustomWidget.FixedListView;
 import thercn.swampy.leveleditor.ImageModify.EditImage;
@@ -31,249 +30,248 @@ import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.TitanicTextView;
+import thercn.swampy.leveleditor.AppUtils.Permission;
 
 public class MainActivity extends AppCompatActivity {
 
-		public static String APPDIR =
-		Environment.getExternalStorageDirectory().toString() + "/SLE";
-		Stopwatch stopwatch = new Stopwatch();
-		String LevelsDir = APPDIR + "/Levels";
-		@Override
-		protected void onCreate(Bundle savedInstanceState) {
-				super.onCreate(savedInstanceState);
-				print("当前版本:20230903");
-				setContentView(R.layout.activity_main);
-				// You can modify this if judgment to view the functionality of Chinese updates
-				if (AppTools.getLanguage() != "zh") {
-						setContentView(R.layout.main_act_english);
-				}
-				// End
-				if (!Permission.checkPermission(this)) {
-						print("请同意权限申请，否则将无法在内部存储创建关卡");
-						Thread.currentThread().suspend();
-				}
-				// 申请权限
-				InitAppDir(); // 检测应用文件夹
-				try {
-						Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
-				} catch (IOException e) {
-						AppLog.WriteLog(e.getMessage());
-				}
-				getExistLevel();
-				InitLayout();
-				// throw new NullPointerException("你抛出了空指针异常");
+	public static String APPDIR =
+	
+	
+	Environment.getExternalStorageDirectory().toString() + "/SLE";
+	Stopwatch stopwatch = new Stopwatch();
+	String LevelsDir = APPDIR + "/Levels";
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		print("当前版本:20230908");
+		setContentView(R.layout.activity_main);
+		// You can modify this if judgment to view the functionality of Chinese updates
+		if (AppTools.getLanguage() != "zh") {
+			setContentView(R.layout.main_act_english);
 		}
+		if (!Permission.checkPermission(this))
+		{
+			Thread.currentThread().suspend();
+		}
+		InitAppDir();
+		try {
+			Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
+		} catch (IOException e) {
+			AppLog.WriteLog(e.getMessage());
+		}
+		getExistLevel();
+		InitLayout();
+		// throw new NullPointerException("你抛出了空指针异常");
+	}
 
-		public void InitLayout() {
-				popupWindow();
-				final TitanicTextView gen_info = findViewById(R.id.gen_info);
-				gen_info.setTextColor(Color.parseColor("#FFFFFF"));
-				gen_info.setGravity(Gravity.CENTER);
-				new Titanic().start(gen_info);
+	public void InitLayout() {
+		popupWindow();
+		final TitanicTextView gen_info = findViewById(R.id.gen_info);
+		gen_info.setTextColor(Color.parseColor("#FFFFFF"));
+		gen_info.setGravity(Gravity.CENTER);
+		new Titanic().start(gen_info);
 
-				final EditText level_png_path = findViewById(R.id.level_png_path);
-				final EditText output_img_path = findViewById(R.id.output_png_path);
-				Button goto_imageeditor = findViewById(R.id.goto_image_editor);
-				Button generic_png = findViewById(R.id.generic_btn);
-				final EditText custom_text = findViewById(R.id.custom_text);
-				custom_text.setOnKeyListener(new View.OnKeyListener() {
+		final EditText level_png_path = findViewById(R.id.level_png_path);
+		final EditText output_img_path = findViewById(R.id.output_png_path);
+		Button goto_imageeditor = findViewById(R.id.goto_image_editor);
+		Button generic_png = findViewById(R.id.generic_btn);
+		final EditText custom_text = findViewById(R.id.custom_text);
+		custom_text.setOnKeyListener(new View.OnKeyListener() {
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN && !custom_text.getText().toString().isEmpty()) {
+						gen_info.setText(custom_text.getText().toString());
+						return true;
+					}
+					return false;
+				}
+			});
+
+		goto_imageeditor.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					startActivity(new Intent(MainActivity.this, EditImage.class));
+				}
+			});
+		generic_png.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					String LPP = level_png_path.getText().toString();
+					File file = new File(LPP);
+					String OIP = output_img_path.getText().toString();
+					if (LPP.isEmpty()) {
+						print("关卡PNG路径为空！(The level image path is empty!)");
+						return;
+					}
+					if (OIP.isEmpty()) {
+						print("输出图片路径为空！(The output image path is empty!)");
+						return;
+					}
+					if (!file.exists()) {
+						print("关卡PNG文件不存在！(The image does not exist!)");
+						return;
+					}
+
+					String input = LPP;
+					stopwatch.start();
+					if (!ImageUtils.isSameSize(input)) {
+						ImageUtils.resizePNG(LPP, OIP + "_resized.png");
+						input = OIP + "_resized.png";
+					}
+					ImageUtils.RenderPNG(input, 0, OIP + ".tmp0.png");
+					ImageUtils.RenderPNG(OIP + ".tmp0.png", 1, OIP + ".tmp1.png");
+					ImageUtils.RenderPNG(OIP + ".tmp1.png", 2, OIP + ".tmp2.png");
+					ImageUtils.RenderPNG(OIP + ".tmp2.png", 3, OIP);
+					stopwatch.stop();
+					long elapsedTime = stopwatch.getElapsedTime();
+					if (AppTools.getLanguage() != "zh") {
+						gen_info.setText("Done！The generated image is " + OIP + "，Taking " +
+										 elapsedTime / 1000000 + "ms");
+					}
+					gen_info.setText("完成！生成的图片在" + OIP + "，耗时" +
+									 elapsedTime / 1000000 + "毫秒");
+					try {
+						Runtime.getRuntime().exec("rm " + OIP + ".tmp*");
+					} catch (IOException e) {
+					}
+				}
+			});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getExistLevel();
+	}
+
+	public void InitAppDir() {
+		File Appdir = new File(APPDIR);
+		File Levelsdir = new File(LevelsDir);
+		File ImageListDir = new File(APPDIR + "/ImageListCache/");
+		int FileNum = Appdir.listFiles().length;
+		if (FileNum != 8) {
+			Levelsdir.mkdirs();
+			ImageListDir.mkdirs();
+			AppLog.InitLogFile();
+			try {
+				AppTools.unZip(this, "WMWAssets.zip",APPDIR, false);
+			} catch (IOException e) {
+				AppLog.WriteExceptionLog(e);
+			}
+			AppTools.ExportAssets(this, APPDIR + "/image/", "dirt.png");
+			AppTools.ExportAssets(this, APPDIR + "/image/", "rock.png");
+			AppTools.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
+			AppTools.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
+		}
+	}
+
+	public void getExistLevel() {
+		File[] files = new File(LevelsDir).listFiles();
+		if (files != null) {
+			String[] fileNames = new String[files.length];
+			for (int i = 0; i < files.length; i++) {
+				fileNames[i] = files[i].getName();
+			}
+			FixedListView listView = findViewById(R.id.level_list);
+			final ArrayAdapter<String> adapter = new ArrayAdapter<>(
+				this, android.R.layout.simple_list_item_1, fileNames);
+			listView.setAdapter(adapter);
+			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> adapterView, View view,
+											int position, long id) {
+						String clickedText = adapter.getItem(position);
+						Intent intent = new Intent(MainActivity.this, LevelEditor.class);
+						intent.putExtra("LevelName", clickedText);
+						startActivity(intent);
+					}
+				});
+		}
+	}
+
+	public void print(CharSequence text) {
+		Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+	}
+	public void popupWindow() {
+
+		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+		final Button btn1 = findViewById(R.id.new_level);
+		btn1.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+
+					if (v.getId() == R.id.new_level) {
+						View view =
+							getLayoutInflater().inflate(R.layout.new_level_dialog, null);
+
+						dialog.setView(view);
+						dialog.setTitle("请输入关卡信息");
+						final AlertDialog alertDialog = dialog.create();
+						alertDialog.show();
+						final EditText editlevelname =
+							view.findViewById(R.id.edit_level_name);
+						final EditText custom_image = view.findViewById(R.id.image_path);
+						final CheckBox checkBox = view.findViewById(R.id.custom_image_btn);
+
+						checkBox.setOnCheckedChangeListener(
+							new CompoundButton.OnCheckedChangeListener() {
 								@Override
-								public boolean onKey(View v, int keyCode, KeyEvent event) {
-										if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN && !custom_text.getText().toString().isEmpty()) {
-												gen_info.setText(custom_text.getText().toString());
-												return true;
-										}
-										return false;
+								public void onCheckedChanged(CompoundButton buttonView,
+															 boolean isChecked) {
+									// 当CheckBox状态改变时执行的操作
+									if (isChecked) {
+										custom_image.setEnabled(true);
+									} else {
+										custom_image.setEnabled(false);
+									}
 								}
-						});
-				
-				goto_imageeditor.setOnClickListener(new View.OnClickListener() {
+							});
+						Button newlevelconfirmbtn = view.findViewById(R.id.new_level_confirm);
+
+						newlevelconfirmbtn.setOnClickListener(new View.OnClickListener() {
 								@Override
 								public void onClick(View view) {
-										startActivity(new Intent(MainActivity.this, EditImage.class));
+									String levelname = editlevelname.getText().toString();
+
+									if (!levelname.isEmpty()) {
+										Intent intent = new Intent(MainActivity.this, LevelEditor.class);
+
+										File LevelDir = new File(LevelsDir + "/" + levelname);
+
+										if (LevelDir.exists()) {
+											print("关卡文件名重复！");
+											return;
+										}
+										String Custom_Level_PNG_Path =
+											custom_image.getText().toString();
+										if (Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked()) {
+											print("自定义关卡图片路径为空！");
+											return;
+										}
+										if (!Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked()) {
+											intent.putExtra("LevelPNGPath", Custom_Level_PNG_Path);
+											intent.putExtra("LevelName", levelname);
+											NewLevel.createLevelFolder(levelname);
+											NewLevel.createLevelXMLFile(levelname);
+											alertDialog.dismiss();
+											startActivity(intent);
+											return;
+										}
+										NewLevel.createLevelFolder(levelname);
+										NewLevel.createLevelPNGFile(levelname);
+										NewLevel.createLevelXMLFile(levelname);
+										alertDialog.dismiss();
+										intent.putExtra("LevelName", levelname);
+										startActivity(intent);
+
+									} else {
+
+										print("关卡文件名为空！");
+									}
 								}
-						});
-				generic_png.setOnClickListener(new View.OnClickListener() {
-								@Override
-								public void onClick(View view) {
-										String LPP = level_png_path.getText().toString();
-										File file = new File(LPP);
-										String OIP = output_img_path.getText().toString();
-										if (LPP.isEmpty()) {
-												print("关卡PNG路径为空！(The level image path is empty!)");
-												return;
-										}
-										if (OIP.isEmpty()) {
-												print("输出图片路径为空！(The output image path is empty!)");
-												return;
-										}
-										if (!file.exists()) {
-												print("关卡PNG文件不存在！(The image does not exist!)");
-												return;
-										}
-
-										String input = LPP;
-										stopwatch.start();
-										if (!ImageUtils.isSameSize(input)) {
-												ImageUtils.resizePNG(LPP, OIP + "_resized.png");
-												input = OIP + "_resized.png";
-										}
-										ImageUtils.RenderPNG(input, 0, OIP + ".tmp0.png");
-										ImageUtils.RenderPNG(OIP + ".tmp0.png", 1, OIP + ".tmp1.png");
-										ImageUtils.RenderPNG(OIP + ".tmp1.png", 2, OIP + ".tmp2.png");
-										ImageUtils.RenderPNG(OIP + ".tmp2.png", 3, OIP);
-										stopwatch.stop();
-										long elapsedTime = stopwatch.getElapsedTime();
-										if (AppTools.getLanguage() != "zh") {
-												gen_info.setText("Done！The generated image is " + OIP + "，Taking " +
-																				 elapsedTime / 1000000 + "ms");
-										}
-										gen_info.setText("完成！生成的图片在" + OIP + "，耗时" +
-																		 elapsedTime / 1000000 + "毫秒");
-										try {
-												Runtime.getRuntime().exec("rm " + OIP + ".tmp*");
-										} catch (IOException e) {
-										}
-								}
-						});
-		}
-
-		@Override
-		protected void onResume() {
-				super.onResume();
-				getExistLevel();
-		}
-
-		public void InitAppDir() {
-				File Appdir = new File(APPDIR);
-				File Levelsdir = new File(LevelsDir);
-				File ObjectsDir = new File(APPDIR + "/Objects/");
-				int FileNum = Appdir.listFiles().length;
-				if (FileNum != 8) {
-						Levelsdir.mkdirs();
-						ObjectsDir.mkdirs();
-						AppLog.InitLogFile();
-						try {
-								AppTools.unZip(this, "Objects.zip", ObjectsDir.toString(), false);
-						} catch (IOException e) {
-								AppLog.WriteLog(e.getMessage());
-						}
-						AppTools.ExportAssets(this, APPDIR + "/image/", "dirt.png");
-						AppTools.ExportAssets(this, APPDIR + "/image/", "rock.png");
-						AppTools.ExportAssets(this, APPDIR, "test1.png");
-						AppTools.ExportAssets(this, APPDIR, "test2.png");
-						AppTools.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
-						AppTools.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
+							});
+					}
 				}
-		}
-
-		public void getExistLevel() {
-				File[] files = new File(LevelsDir).listFiles();
-				if (files != null) {
-						String[] fileNames = new String[files.length];
-						for (int i = 0; i < files.length; i++) {
-								fileNames[i] = files[i].getName();
-						}
-						FixedListView listView = findViewById(R.id.level_list);
-						final ArrayAdapter<String> adapter = new ArrayAdapter<>(
-								this, android.R.layout.simple_list_item_1, fileNames);
-						listView.setAdapter(adapter);
-						listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-										@Override
-										public void onItemClick(AdapterView<?> adapterView, View view,
-																						int position, long id) {
-												String clickedText = adapter.getItem(position);
-												Intent intent = new Intent(MainActivity.this, LevelEditor.class);
-												intent.putExtra("LevelName", clickedText);
-												startActivity(intent);
-										}
-								});
-				}
-		}
-		
-		public void print(CharSequence text) {
-				Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
-		}
-		public void popupWindow() {
-
-				final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-				final Button btn1 = findViewById(R.id.new_level);
-				btn1.setOnClickListener(new View.OnClickListener() {
-								@Override
-								public void onClick(View v) {
-
-										if (v.getId() == R.id.new_level) {
-												View view =
-														getLayoutInflater().inflate(R.layout.new_level_dialog, null);
-
-												dialog.setView(view);
-												dialog.setTitle("请输入关卡信息");
-												final AlertDialog alertDialog = dialog.create();
-												alertDialog.show();
-												final EditText editlevelname =
-														view.findViewById(R.id.edit_level_name);
-												final EditText custom_image = view.findViewById(R.id.image_path);
-												final CheckBox checkBox = view.findViewById(R.id.custom_image_btn);
-
-												checkBox.setOnCheckedChangeListener(
-														new CompoundButton.OnCheckedChangeListener() {
-																@Override
-																public void onCheckedChanged(CompoundButton buttonView,
-																														 boolean isChecked) {
-																		// 当CheckBox状态改变时执行的操作
-																		if (isChecked) {
-																				custom_image.setEnabled(true);
-																		} else {
-																				custom_image.setEnabled(false);
-																		}
-																}
-														});
-												Button newlevelconfirmbtn = view.findViewById(R.id.new_level_confirm);
-
-												newlevelconfirmbtn.setOnClickListener(new View.OnClickListener() {
-																@Override
-																public void onClick(View view) {
-																		String levelname = editlevelname.getText().toString();
-
-																		if (!levelname.isEmpty()) {
-																				Intent intent = new Intent(MainActivity.this, LevelEditor.class);
-
-																				File LevelDir = new File(LevelsDir + "/" + levelname);
-
-																				if (LevelDir.exists()) {
-																						print("关卡文件名重复！");
-																						return;
-																				}
-																				String Custom_Level_PNG_Path =
-																						custom_image.getText().toString();
-																				if (Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked()) {
-																						print("自定义关卡图片路径为空！");
-																						return;
-																				}
-																				if (!Custom_Level_PNG_Path.isEmpty() && checkBox.isChecked()) {
-																						intent.putExtra("LevelPNGPath", Custom_Level_PNG_Path);
-																						intent.putExtra("LevelName", levelname);
-																						NewLevel.createLevelFolder(levelname);
-																						NewLevel.createLevelXMLFile(levelname);
-																						alertDialog.dismiss();
-																						startActivity(intent);
-																						return;
-																				}
-																				NewLevel.createLevelFolder(levelname);
-																				NewLevel.createLevelPNGFile(levelname);
-																				NewLevel.createLevelXMLFile(levelname);
-																				alertDialog.dismiss();
-																				intent.putExtra("LevelName", levelname);
-																				startActivity(intent);
-
-																		} else {
-
-																				print("关卡文件名为空！");
-																		}
-																}
-														});
-										}
-								}
-						});
-		}
+			});
+	}
 }
