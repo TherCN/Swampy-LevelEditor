@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
-import java.io.IOException;
-import thercn.swampy.leveleditor.AppUtils.AppLog;
-import thercn.swampy.leveleditor.AppUtils.AppTools;
-import thercn.swampy.leveleditor.AppUtils.Permission;
 import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
+import thercn.swampy.leveleditor.AppUtils.AppLog;
 
 public class SplashActivity extends Activity {
 
@@ -40,4 +38,28 @@ public class SplashActivity extends Activity {
 				}
 			}, 1000);
 	}
+	public int getDisplayHeight() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.heightPixels;
+    }
+
+    public float getDisplayHeightInMM() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return (displayMetrics.heightPixels / displayMetrics.ydpi) * 25.4f;
+    }
+
+    public int getDisplayWidth() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.widthPixels;
+    }
+
+    public float getDisplayWidthInMM() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return (displayMetrics.widthPixels / displayMetrics.xdpi) * 25.4f;
+    }
+	
 }

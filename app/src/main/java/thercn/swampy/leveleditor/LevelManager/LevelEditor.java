@@ -171,25 +171,25 @@ public class LevelEditor extends AppCompatActivity {
         double realY = y / NumY;
         return new double[] {realX, realY};
     }
-	
-		public static double[] gl2px(View view, double x, double y) {
-			// Get the bounds of the view
-			Rect bounds = new Rect();
-			view.getLocalVisibleRect(bounds);
 
-			// Calculate the coordinates relative to the center of the view
-			double relativeX = x - bounds.centerX();
-			double relativeY = y - bounds.centerY();
+	public static double[] gl2px(View view, double x, double y) {
+		// Get the bounds of the view
+		Rect bounds = new Rect();
+		view.getLocalVisibleRect(bounds);
 
-			// Convert the coordinates to be relative to the top-left corner of the view
-			double originalX = relativeX + bounds.left;
-			double originalY = relativeY + bounds.top;
+		// Calculate the coordinates relative to the center of the view
+		double relativeX = x - bounds.centerX();
+		double relativeY = y - bounds.centerY();
 
-			// Return the original coordinates as a double array
-			return new double[] {originalX * 5.5555555555555, originalY * -5.5555541666666};
-		}
-	
-	
+		// Convert the coordinates to be relative to the top-left corner of the view
+		double originalX = relativeX + bounds.left;
+		double originalY = relativeY + bounds.top;
+
+		// Return the original coordinates as a double array
+		return new double[] {originalX * 5.5555555555555, originalY * -5.5555541666666};
+	}
+
+
     public double[] gl2dp(View view, double x, double y) {
 		// 假设视图中心点坐标为(0,0)
 		double[] relativeCoordinates = {x, y};
@@ -202,12 +202,12 @@ public class LevelEditor extends AppCompatActivity {
 		double bottomRightX = width / 2;
 		double bottomRightY = height / 2;
 		// 根据四角坐标进行转换
-		double originalX = (relativeCoordinates[0] + topLeftX) * 2*5.5555555555555;
-		double originalY = (relativeCoordinates[1] + topLeftY) * 2*5.5555541666666;
+		double originalX = (relativeCoordinates[0] + topLeftX) * 2 * 5.5555555555555;
+		double originalY = (relativeCoordinates[1] + topLeftY) * 2 * 5.5555541666666;
 		// 返回原始坐标
 		return new double[]{originalX, originalY};
 	}
-	
+
     public void showObjects(String currentLevelFile) {
         String levelxmlPath =
             NewLevel.LevelsDir + "/" + currentLevelFile + "/" + currentLevelFile + ".xml";
@@ -319,22 +319,20 @@ public class LevelEditor extends AppCompatActivity {
 			locationStr[i] = currentLevel.getObjectProperties(i)[1][0];
 			reallocation[i][0] = Double.parseDouble(locationStr[i].split(" ")[0]);
 			reallocation[i][1] = Double.parseDouble(locationStr[i].split(" ")[1]);
-			origLocation[i] = gl2px(level_image, reallocation[i][0], reallocation[i][1]);
-			
+			//origLocation[i] = gl2px(level_image, reallocation[i][0], reallocation[i][1]);
+
 			for (int a = 0; a < currentLevel.getObjectProperties(i)[0].length; a++) {
 				if (currentLevel.getObjectProperties(i)[0][a].equals("Angle")) {
 					angleValue = currentLevel.getObjectProperties(i)[1][a];
 				}
 			}
 			angle[i] = Double.parseDouble(angleValue);
-			
+
 
 		}
+
 		
-		for (int i = 0; i < origLocation.length; i++) {
-			AppLog.WriteLog(origLocation[i][0] + " " + origLocation[i][1]);
-		}
-		level_image.setData(path,names,reallocation,angle);
+		level_image.setData(path, names, reallocation, angle);
 
 	}
 
@@ -345,31 +343,31 @@ public class LevelEditor extends AppCompatActivity {
 
 	public String CropObjectImage(String object) {
 		File outputFilePath = new File("/sdcard/SLE/ImageListCache/" + OpenLevel);
-		if (!outputFilePath.exists()) {
-			outputFilePath.mkdirs();
-		}
+
 		SpriteCroper objectImage = new SpriteCroper(new File("/sdcard/SLE" + object));
 		try {
-			String path = null;
-			String[] sprites = objectImage.getSpritesForObject();
-			for (int i = 0; i < sprites.length; i++) {
-				//if (path != null)
-				//{
-				String[] imagelist = objectImage.getImageListForSprite(sprites[i]);
-				String[] imageFiles = objectImage.getImageFileForSprite(sprites[i]);
-				objectImage.cropImageList(imagelist[0]);
-				Bitmap objectBitmap = objectImage.mergeBitmaps(imageFiles);
-				path = outputFilePath + "/" + object.split("/")[2] + ".png";
-				OutputStream outputStream = new FileOutputStream(path);
-				objectBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-				//}
+			if (!outputFilePath.exists()) {
+				outputFilePath.mkdirs();
+				String path = null;
+				String[] sprites = objectImage.getSpritesForObject();
+				for (int i = 0; i < sprites.length; i++) {
+					//if (path != null)
+					//{
+					String[] imagelist = objectImage.getImageListForSprite(sprites[i]);
+					String[] imageFiles = objectImage.getImageFileForSprite(sprites[i]);
+					objectImage.cropImageList(imagelist[0]);
+					Bitmap objectBitmap = objectImage.mergeBitmaps(imageFiles);
+					path = outputFilePath + "/" + object.split("/")[2] + ".png";
+					OutputStream outputStream = new FileOutputStream(path);
+					objectBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+					//}
+				}
 			}
 
-			return path;
+			return outputFilePath + "/" + object.split("/")[2] + ".png";
 		} catch (Exception e) {
 			AppLog.WriteExceptionLog(e);
 		}
-
 		return null;
 	}
 

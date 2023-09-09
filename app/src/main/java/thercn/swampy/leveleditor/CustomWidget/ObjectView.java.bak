@@ -135,18 +135,26 @@ public class ObjectView extends ImageView {
         void onObjectViewClicked(String name);
     }
 
-	//有裁剪问题，正在努力寻找修复方法
  	public Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
-		// 创建一个新的Bitmap，以适应旋转后的图片尺寸
-		Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-		// 创建一个画布（Canvas）对象，将旋转后的图片绘制到该画布上
-		Canvas canvas = new Canvas(rotatedBitmap);
-		// 将原始Bitmap中心点设为坐标原点，旋转该Bitmap，并将旋转后的图片绘制到Canvas上
-		canvas.translate(bitmap.getWidth() / 2, bitmap.getHeight() / 2);
-		canvas.rotate(degrees);
-		canvas.translate(-bitmap.getWidth() / 2, -bitmap.getHeight() / 2);
-		canvas.drawBitmap(bitmap, 0, 0, null);
-		return rotatedBitmap;
+		// 计算原始Bitmap的中心点坐标
+		Matrix m = new Matrix();
+		m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+		float targetX, targetY;
+		if (orientationDegree == 90) {
+			targetX = bm.getHeight();targetY = 0;
+		} else {
+			targetX = bm.getHeight();
+			targetY = bm.getWidth();
+		}
+		final float[] values = new float[9];
+		m.getValues(values);
+		float x1 = values[Matrix.MTRANS_X];
+		float y1 = values[Matrix.MTRANS_Y];
+		m.postTranslate(targetX - x1, targetY - y1);
+		Bitmap bm1 = Bitmap.createBitmap(bm.getHeight(), bm.getWidth(), Bitmap.Config.ARGB_8888);
+		Paint paint = new Paint();
+		Canvas canvas = new Canvas(bm1);
+		canvas.drawBitmap(bm, m, paint);
 	}
 
 }
