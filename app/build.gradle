@@ -25,7 +25,6 @@ repositories {
     maven {     
         url "https://jitpack.io"
 		url "https://maven.google.com"
-		url "https://repo.maven.apache.org"
         mavenCentral()
     }    
 } 
