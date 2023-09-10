@@ -25,10 +25,13 @@ repositories {
     maven {     
         url "https://jitpack.io"
 		url "https://maven.google.com"
+		url "https://repo.maven.apache.org"
         mavenCentral()
     }    
 } 
 dependencies {
+	//implementation fileTree(dir: 'libs', include: ['imageio.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.0.0'
+
 }

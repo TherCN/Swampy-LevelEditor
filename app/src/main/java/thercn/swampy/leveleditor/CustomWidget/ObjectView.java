@@ -6,11 +6,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import thercn.swampy.leveleditor.AppUtils.AppLog;
+import thercn.swampy.leveleditor.ImageModify.ImageUtils;
 
 public class ObjectView extends ImageView {
     private int mSmallImageCount;
@@ -70,11 +70,19 @@ public class ObjectView extends ImageView {
 		for (int i = 0; i < mSmallImageCount; i++) {
 			Matrix matrix = new Matrix();
 			ClickedImage[i] = BitmapFactory.decodeFile(mSmallImagePaths[i]);
+			/*
 			double x = centerX - ClickedImage[i].getWidth() / 2;
 			double y = centerY - ClickedImage[i].getHeight() / 2;
-			Bitmap rotateBitmap = rotateBitmap(ClickedImage[i], (float)-mSmallImageAngles[i]);
+			*/
+			
+			Bitmap rotatedBitmap = rotateBitmap(ClickedImage[i], (float)mSmallImageAngles[i]);
+			//ImageUtils.saveBitmapImage(rotatedBitmap,"/sdcard/testbmp/" + mSmallImageNames[i] + ".png");
+			double x = centerX - rotatedBitmap.getWidth() / 2;
+			double y = centerY - rotatedBitmap.getHeight() / 2;
+			
+			
 			matrix.postTranslate((float)(x - scaleX * mSmallImagePositions[i][0]), (float)(y - scaleY * mSmallImagePositions[i][1]));
-			canvas.drawBitmap(rotateBitmap, matrix, paint);
+			canvas.drawBitmap(rotatedBitmap, matrix, paint);
 		}
 	}
 
@@ -134,20 +142,66 @@ public class ObjectView extends ImageView {
     public interface OnObjectViewClickedListener {
         void onObjectViewClicked(String name);
     }
-
+	
+	
+	/*public Bitmap rotateBitmap(Bitmap bitmap,float angle) {
+        try {
+            // 读取原始图片
+            BufferedImage originalImage = ImageIO.read(new File("/sdcard/test.png"));
+            // 创建一个新的BufferedImage，它的尺寸足够大以包含旋转后的图像
+            int maxsize = originalImage.getWidth() + originalImage.getHeight();
+            BufferedImage rotatedImage = new BufferedImage(maxsize,
+														   maxsize, BufferedImage.TYPE_INT_ARGB);
+            // 获取旋转图像的Graphics2D对象
+            Graphics2D g = rotatedImage.createGraphics();
+            // 定义旋转的角度（以弧度为单位）
+            double var = Math.toRadians(angle);
+            // 创建一个旋转矩阵并应用到Graphics2D对象
+            AffineTransform at = new AffineTransform();
+            at.translate(rotatedImage.getWidth() / 2, rotatedImage.getHeight() / 2);
+            at.rotate(var);
+            g.setTransform(at);
+            // 将原始图像绘制到旋转后的图像上
+            g.drawImage(originalImage, -originalImage.getWidth() / 2, -originalImage.getHeight() / 2,null);
+						// 释放此图形的上下文以及它使用的所有系统资源
+			g.dispose();
+            // 将旋转后的图像写入新文件
+            File outputfile = new File("/sdcard/out.png");
+            ImageIO.write(rotatedImage, "png", outputfile);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+		return bitmap;
+    }*/
+	
+	
+	
+	
 	//有裁剪问题，正在努力寻找修复方法
+	
  	public Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
 		// 创建一个新的Bitmap，以适应旋转后的图片尺寸
-		Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+		//int maxsize = bitmap.getWidth() + getHeight();
+		int width = bitmap.getWidth();
+		int height = bitmap.getHeight();
+		double radians = Math.toRadians(degrees % 360);
+		//if (radians < 0) {radians += Math.PI * 2;}
+		int newWidth = (int) Math.round(Math.abs(width * Math.cos(degrees)) + (int) Math.abs(height * Math.sin(degrees)));
+		int newHeight = (int) Math.round(Math.abs(width * Math.sin(degrees)) + (int) Math.abs(height * Math.cos(degrees)));	
+		AppLog.WriteLog(newWidth + " " + newHeight + "," + degrees);
+		Bitmap rotatedBitmap = Bitmap.createBitmap(35, 35, bitmap.getConfig());
 		// 创建一个画布（Canvas）对象，将旋转后的图片绘制到该画布上
 		Canvas canvas = new Canvas(rotatedBitmap);
-		// 将原始Bitmap中心点设为坐标原点，旋转该Bitmap，并将旋转后的图片绘制到Canvas上
-		canvas.translate(bitmap.getWidth() / 2, bitmap.getHeight() / 2);
-		canvas.rotate(degrees);
-		canvas.translate(-bitmap.getWidth() / 2, -bitmap.getHeight() / 2);
-		canvas.drawBitmap(bitmap, 0, 0, null);
+		//double var = Math.toRadians(degrees);
+		int centerx = canvas.getWidth() / 2;
+		int centery = canvas.getHeight() / 2;
+		
+		canvas.rotate(-degrees,centerx, centery);
+		//canvas.translate(-bitmap.getWidth() / 2, -bitmap.getHeight() / 2);
+		//canvas.drawBitmap(bitmap,0,0,null);
+		canvas.drawBitmap(bitmap, centerx - bitmap.getWidth() / 2, centery - bitmap.getHeight() / 2, null);
+		//canvas.setMatrix(m);
 		return rotatedBitmap;
 	}
 
 }
-
