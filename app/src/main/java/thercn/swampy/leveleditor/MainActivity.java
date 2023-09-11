@@ -35,32 +35,35 @@ import thercn.swampy.leveleditor.AppUtils.Permission;
 public class MainActivity extends AppCompatActivity {
 
 	public static String APPDIR =
-	
-	
+
+
 	Environment.getExternalStorageDirectory().toString() + "/SLE";
 	Stopwatch stopwatch = new Stopwatch();
 	String LevelsDir = APPDIR + "/Levels";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		print("当前版本:20230908");
+		print("当前版本:20230911");
 		setContentView(R.layout.activity_main);
 		// You can modify this if judgment to view the functionality of Chinese updates
 		if (AppTools.getLanguage() != "zh") {
 			setContentView(R.layout.main_act_english);
 		}
-		if (!Permission.checkPermission(this))
-		{
+		if (!Permission.checkPermission(this)) {
 			Thread.currentThread().suspend();
 		}
 		InitAppDir();
 		try {
 			Runtime.getRuntime().exec("logcat >" + AppLog.Logcat_Log);
 		} catch (IOException e) {
-			AppLog.WriteLog(e.getMessage());
+			AppLog.WriteExceptionLog(e);
 		}
 		getExistLevel();
-		InitLayout();
+		new Thread(new Runnable() {
+				public void run() {
+					InitLayout();
+				}
+			}).start();
 		// throw new NullPointerException("你抛出了空指针异常");
 	}
 
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 			ImageListDir.mkdirs();
 			AppLog.InitLogFile();
 			try {
-				AppTools.unZip(this, "WMWAssets.zip",APPDIR, false);
+				AppTools.unZip(this, "WMWAssets.zip", APPDIR, false);
 			} catch (IOException e) {
 				AppLog.WriteExceptionLog(e);
 			}

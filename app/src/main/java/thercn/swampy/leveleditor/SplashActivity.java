@@ -21,6 +21,7 @@ public class SplashActivity extends Activity {
 		if (!SplashActivity) {
 			Intent intent = new Intent(SplashActivity.this, MainActivity.class);
 			startActivity(intent);
+
 			return;
 		}
 		setContentView(R.layout.splash);
@@ -38,28 +39,6 @@ public class SplashActivity extends Activity {
 				}
 			}, 1000);
 	}
-	public int getDisplayHeight() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.heightPixels;
-    }
 
-    public float getDisplayHeightInMM() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        return (displayMetrics.heightPixels / displayMetrics.ydpi) * 25.4f;
-    }
 
-    public int getDisplayWidth() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.widthPixels;
-    }
-
-    public float getDisplayWidthInMM() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        return (displayMetrics.widthPixels / displayMetrics.xdpi) * 25.4f;
-    }
-	
 }

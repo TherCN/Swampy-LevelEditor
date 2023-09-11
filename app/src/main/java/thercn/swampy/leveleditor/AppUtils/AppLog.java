@@ -29,13 +29,15 @@ public class AppLog {
       }
     }
   }
+  
   public static void WriteExceptionLog(Exception error)
   {
-	  WriteLog(error.getMessage());
+	  WriteLog("ERROR: " + error.getMessage());
 	  for (int i = 0; i < error.getStackTrace().length; i++) {
-	  WriteLog(error.getStackTrace()[i]);
+	  WriteLog("ERROR: " + error.getStackTrace()[i]);
 	  }
   }
+  
   public static void WriteLog(Object string){
     try {
       FileWriter WriteLogText = new FileWriter(Logfile, true);

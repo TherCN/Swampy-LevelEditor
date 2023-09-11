@@ -143,64 +143,21 @@ public class ObjectView extends ImageView {
         void onObjectViewClicked(String name);
     }
 	
-	
-	/*public Bitmap rotateBitmap(Bitmap bitmap,float angle) {
-        try {
-            // 读取原始图片
-            BufferedImage originalImage = ImageIO.read(new File("/sdcard/test.png"));
-            // 创建一个新的BufferedImage，它的尺寸足够大以包含旋转后的图像
-            int maxsize = originalImage.getWidth() + originalImage.getHeight();
-            BufferedImage rotatedImage = new BufferedImage(maxsize,
-														   maxsize, BufferedImage.TYPE_INT_ARGB);
-            // 获取旋转图像的Graphics2D对象
-            Graphics2D g = rotatedImage.createGraphics();
-            // 定义旋转的角度（以弧度为单位）
-            double var = Math.toRadians(angle);
-            // 创建一个旋转矩阵并应用到Graphics2D对象
-            AffineTransform at = new AffineTransform();
-            at.translate(rotatedImage.getWidth() / 2, rotatedImage.getHeight() / 2);
-            at.rotate(var);
-            g.setTransform(at);
-            // 将原始图像绘制到旋转后的图像上
-            g.drawImage(originalImage, -originalImage.getWidth() / 2, -originalImage.getHeight() / 2,null);
-						// 释放此图形的上下文以及它使用的所有系统资源
-			g.dispose();
-            // 将旋转后的图像写入新文件
-            File outputfile = new File("/sdcard/out.png");
-            ImageIO.write(rotatedImage, "png", outputfile);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-		return bitmap;
-    }*/
-	
-	
-	
-	
-	//有裁剪问题，正在努力寻找修复方法
-	
+	//有缩放问题，先凑活着用吧
  	public Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
-		// 创建一个新的Bitmap，以适应旋转后的图片尺寸
-		//int maxsize = bitmap.getWidth() + getHeight();
 		int width = bitmap.getWidth();
 		int height = bitmap.getHeight();
-		double radians = Math.toRadians(degrees % 360);
-		//if (radians < 0) {radians += Math.PI * 2;}
-		int newWidth = (int) Math.round(Math.abs(width * Math.cos(degrees)) + (int) Math.abs(height * Math.sin(degrees)));
-		int newHeight = (int) Math.round(Math.abs(width * Math.sin(degrees)) + (int) Math.abs(height * Math.cos(degrees)));	
-		AppLog.WriteLog(newWidth + " " + newHeight + "," + degrees);
-		Bitmap rotatedBitmap = Bitmap.createBitmap(35, 35, bitmap.getConfig());
+		//int newWidth = (int) Math.round(Math.abs(width * Math.cos(degrees)) + (int) Math.abs(height * Math.sin(degrees)));
+		//int newHeight = (int) Math.round(Math.abs(width * Math.sin(degrees)) + (int) Math.abs(height * Math.cos(degrees)));	
+		//AppLog.WriteLog(newWidth + " " + newHeight + "," + degrees);
+		Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap.getWidth() + 10, bitmap.getHeight() + 10, bitmap.getConfig());
 		// 创建一个画布（Canvas）对象，将旋转后的图片绘制到该画布上
 		Canvas canvas = new Canvas(rotatedBitmap);
-		//double var = Math.toRadians(degrees);
 		int centerx = canvas.getWidth() / 2;
 		int centery = canvas.getHeight() / 2;
 		
 		canvas.rotate(-degrees,centerx, centery);
-		//canvas.translate(-bitmap.getWidth() / 2, -bitmap.getHeight() / 2);
-		//canvas.drawBitmap(bitmap,0,0,null);
 		canvas.drawBitmap(bitmap, centerx - bitmap.getWidth() / 2, centery - bitmap.getHeight() / 2, null);
-		//canvas.setMatrix(m);
 		return rotatedBitmap;
 	}
 
