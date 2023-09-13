@@ -47,8 +47,7 @@ public class PluginLoader {
 		clazz = null;
 		PluginEntry = pluginPackageName.get(instance) + "." + pluginEntry.get(instance);
 	}
-
-	String a = this.getClass().getPackageName();
+	
 	public StringBuilder getPluginInfo() throws Exception {
 		StringBuilder stringBuilder = 
 			new StringBuilder("插件名:" + pluginName.get(instance) + "\n");
