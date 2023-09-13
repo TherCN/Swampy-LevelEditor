@@ -27,7 +27,6 @@ import thercn.swampy.leveleditor.LevelManager.LevelEditor;
 import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText;
-//import thercn.swampy.leveleditor.ThridPartsWidget.SpinnerEditText.SpinnerEditText;
 
 
 public class LevelEditor extends AppCompatActivity {
@@ -40,25 +39,25 @@ public class LevelEditor extends AppCompatActivity {
 	LevelXMLParser currentLevel;
 	ObjectView level_image;
 	File levelObjectImagePath;
+	String levelXMLPath;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.level_editor);
         OpenLevel = getIntent().getStringExtra("LevelName");
         Button reload = findViewById(R.id.reload);
+		levelXMLPath =
+            NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel + ".xml";
+		
         reload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showImage(OpenLevel);
                     showObjects(OpenLevel);
+					showObjectImage(levelXMLPath);
                 }
             });
-        showImage(OpenLevel);
-        showObjects(OpenLevel);
-
-		String levelXMLPath =
-            NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel + ".xml";
-		showObjectImage(levelXMLPath);
 
 
     }
@@ -68,6 +67,7 @@ public class LevelEditor extends AppCompatActivity {
 		super.onResume();
 		showImage(OpenLevel);
         showObjects(OpenLevel);
+		showObjectImage(levelXMLPath);
 	}
 
 
@@ -87,16 +87,7 @@ public class LevelEditor extends AppCompatActivity {
         Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
         final TextView ClickLocation = findViewById(R.id.click);
         level_image = findViewById(R.id.level_image);
-
-		level_image.setOnObjectViewClickedListener(new ObjectView.OnObjectViewClickedListener() {
-				@Override
-				public void onObjectViewClicked(String name) {
-					// 当点击小图片时执行的代码。
-					AppTools.printText(LevelEditor.this, "You clicked the object: " + name);
-				}
-			});
 		level_image.setImageBitmap(levelimage);
-
         ClickLocation.setTextSize(10);
 		level_image.setOnTouchListener(new View.OnTouchListener() {
                 double[] lastPos = {0, 0};
@@ -165,7 +156,7 @@ public class LevelEditor extends AppCompatActivity {
             });
     }
     //这里我自己定义了一个单位"gl"，全名Game Location，也就是游戏内的坐标
-    public double[] px2gl(double x, double y) {
+    public static double[] px2gl(double x, double y) {
         double NumX = 5.5555555555555;
         double NumY = -5.5555541666666;
         double realX = x / NumX;
@@ -188,6 +179,15 @@ public class LevelEditor extends AppCompatActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long itemId) {
 					String[][] currentObjectInfo = currentLevel.getObjectProperties((int)itemId);
+					MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
+					PropertiesList.setAdapter(ObjectProperties);
+				}
+			});
+		level_image.setOnObjectViewClickedListener(new ObjectView.OnObjectViewClickedListener() {
+				@Override
+				public void onObjectViewClicked(String name) {
+					// 当点击小图片时执行的代码。
+					String[][] currentObjectInfo = currentLevel.getObjectProperties(name);
 					MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 					PropertiesList.setAdapter(ObjectProperties);
 				}
@@ -244,6 +244,7 @@ public class LevelEditor extends AppCompatActivity {
 						AppTools.printText(LevelEditor.this, "添加成功" + ObjectName.getText().toString());
 						Dialog.dismiss();
 						showObjects(OpenLevel);
+						showObjectImage(levelXMLPath);
 					}
 				}
 			});

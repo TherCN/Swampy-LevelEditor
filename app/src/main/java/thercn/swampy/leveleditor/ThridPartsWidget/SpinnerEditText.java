@@ -72,7 +72,7 @@ public class SpinnerEditText extends AppCompatEditText implements AdapterView.On
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
-            mPopupWindow = new PopupWindow(mPopListView, getWidth(), LinearLayout.LayoutParams.WRAP_CONTENT);
+            mPopupWindow = new PopupWindow(mPopListView, getMaxWidth(), getHeight() + 300);
             mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE)); // 设置popWindow背景颜色
             mPopupWindow.setFocusable(true); // 让popWindow获取焦点
             mPopupWindow.setOnDismissListener(this);
@@ -97,7 +97,6 @@ public class SpinnerEditText extends AppCompatEditText implements AdapterView.On
     }
 
     public void setAdapter(ArrayAdapter adapter) {
-				Log.e("SLE","传入适配器:" + adapter.toString());
         mPopListView.setAdapter(adapter);
     }
 

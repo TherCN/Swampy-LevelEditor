@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.ImageModify.ImageUtils;
+import thercn.swampy.leveleditor.LevelManager.LevelEditor;
 
 public class ObjectView extends ImageView {
     private int mSmallImageCount;
@@ -80,21 +81,27 @@ public class ObjectView extends ImageView {
 			double x = centerX - rotatedBitmap.getWidth() / 2;
 			double y = centerY - rotatedBitmap.getHeight() / 2;
 			
-			
-			matrix.postTranslate((float)(x - scaleX * mSmallImagePositions[i][0]), (float)(y - scaleY * mSmallImagePositions[i][1]));
-			canvas.drawBitmap(rotatedBitmap, matrix, paint);
+			ObjectLocation[0] = (float)(x - scaleX * mSmallImagePositions[i][0]);
+			ObjectLocation[1] = (float)(y - scaleY * mSmallImagePositions[i][1]);
+			//matrix.postTranslate((float)(x - scaleX * mSmallImagePositions[i][0]), (float)(y - scaleY * mSmallImagePositions[i][1]));
+			canvas.drawBitmap(rotatedBitmap, ObjectLocation[0],ObjectLocation[1], paint);
 		}
 	}
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+		float x = event.getX();
+		float y = event.getY();
+		float centerX = getWidth() / 2;
+		float centerY = getHeight() / 2;
+		float relativeX = x - centerX;
+		float relativeY = y - centerY;
+		
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				touchStartTime = System.currentTimeMillis();
 				for (int i = 0; i < mSmallImageCount; i++) {
-					ObjectLocation[0] = (float)((centerX - ClickedImage[i].getWidth() / 2) - mSmallImagePositions[i][0]);
-					ObjectLocation[1] = (float)((centerX - ClickedImage[i].getHeight() / 2) - mSmallImagePositions[i][1]);
-
+					double ClickLocation[] = LevelEditor.px2gl(relativeX,relativeY);
 					double[] position = mSmallImagePositions[i];
 					if (event.getX() > ObjectLocation[0] && event.getX() < (ObjectLocation[0] + ClickedImage[i].getHeight())
 						&& 
@@ -111,13 +118,15 @@ public class ObjectView extends ImageView {
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if (mClickedIndex >= 0 && mClickedIndex < mSmallImageCount && System.currentTimeMillis() - touchStartTime > 500) {
-					double[] position = mSmallImagePositions[mClickedIndex];
-					position[0] = ObjectLocation[0];
-					position[1] = ObjectLocation[1];
+					double[] position = new double[2];
+					
+					mSmallImagePositions[mClickedIndex][0] = event.getX();
+					mSmallImagePositions[mClickedIndex][1] = event.getY();
 					invalidate(); // 重新绘制视图，以更新位置
 				}
 				break;
 			case MotionEvent.ACTION_UP:
+				
 				mClickedIndex = -1; // 重置点击索引
 				invalidate(); // 重新绘制视图，以取消点击状态
 				break;
@@ -134,8 +143,8 @@ public class ObjectView extends ImageView {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(5);
 
-            double[] position = mSmallImagePositions[mClickedIndex];
-            canvas.drawRect((float) position[0], (float) position[1], (float) position[0] + ClickedImage[mClickedIndex].getWidth(), (float) position[1] + ClickedImage[mClickedIndex].getHeight(), paint);
+            float[] position = ObjectLocation;
+            canvas.drawRect( position[0], position[1], position[0] + ClickedImage[mClickedIndex].getWidth(), position[1] + ClickedImage[mClickedIndex].getHeight(), paint);
         }
     }
 
@@ -144,6 +153,7 @@ public class ObjectView extends ImageView {
     }
 	
 	//有缩放问题，先凑活着用吧
+	//TODO:Please try a better solution to replace here
  	public Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
 		int width = bitmap.getWidth();
 		int height = bitmap.getHeight();

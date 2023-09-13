@@ -154,9 +154,7 @@ public class SpriteCroper {
 
 	}
 
-	public Bitmap mergeBitmaps(String[] imagePaths) {
-
-		
+	public Bitmap mergeBitmaps(String[] imagePaths) {	
 		Bitmap[] bitmaps = new Bitmap[imagePaths.length];
 		int width = 0, height = 0;
 		// 加载第一个图片并获取其大小作为合并后图片的大小

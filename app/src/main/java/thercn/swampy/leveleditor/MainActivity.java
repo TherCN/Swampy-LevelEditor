@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.AppUtils.AppTools;
+import thercn.swampy.leveleditor.AppUtils.Permission;
 import thercn.swampy.leveleditor.AppUtils.Stopwatch;
 import thercn.swampy.leveleditor.CustomWidget.FixedListView;
 import thercn.swampy.leveleditor.ImageModify.EditImage;
@@ -30,16 +31,14 @@ import thercn.swampy.leveleditor.MainActivity;
 import thercn.swampy.leveleditor.R;
 import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.Titanic;
 import thercn.swampy.leveleditor.ThridPartsWidget.TitanicTools.TitanicTextView;
-import thercn.swampy.leveleditor.AppUtils.Permission;
+import thercn.swampy.leveleditor.AppUtils.PluginLoader;
 
 public class MainActivity extends AppCompatActivity {
 
-	public static String APPDIR =
-
-
-	Environment.getExternalStorageDirectory().toString() + "/SLE";
+	public static String APPDIR = Environment.getExternalStorageDirectory().toString() + "/SLE";
 	Stopwatch stopwatch = new Stopwatch();
 	String LevelsDir = APPDIR + "/Levels";
+	File PluginDir = new File(APPDIR + "/Plugins");
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,15 +57,43 @@ public class MainActivity extends AppCompatActivity {
 		} catch (IOException e) {
 			AppLog.WriteExceptionLog(e);
 		}
+		LoadPlugin();
 		getExistLevel();
 		new Thread(new Runnable() {
 				public void run() {
 					InitLayout();
 				}
 			}).start();
-		// throw new NullPointerException("你抛出了空指针异常");
+
 	}
 
+	public void LoadPlugin() {
+		File[] plugins = null;
+
+		if (PluginDir.listFiles().length == 0) {
+			return;
+		}
+		plugins = PluginDir.listFiles();
+		for (int i = 0; i < plugins.length; i++) {
+			try {
+				final PluginLoader plugin = new PluginLoader(plugins[i].toString());
+				plugin.LoadPlugin();
+				Thread thread = new Thread(new Runnable() {
+						public void run() {
+							try {
+								plugin.RunPlugin();
+							} catch (Exception e) {
+								AppLog.WriteExceptionLog(e);
+							}
+						}
+					});
+				thread.start();
+			} catch (Exception e) {
+				AppLog.WriteLog(e);
+			}
+		}
+
+	}
 	public void InitLayout() {
 		popupWindow();
 		final TitanicTextView gen_info = findViewById(R.id.gen_info);
@@ -151,10 +178,14 @@ public class MainActivity extends AppCompatActivity {
 		File Appdir = new File(APPDIR);
 		File Levelsdir = new File(LevelsDir);
 		File ImageListDir = new File(APPDIR + "/ImageListCache/");
+		if (!Appdir.exists()) {
+			Appdir.mkdir();
+		}
 		int FileNum = Appdir.listFiles().length;
-		if (FileNum != 8) {
+		if (FileNum != 9) {
 			Levelsdir.mkdirs();
 			ImageListDir.mkdirs();
+			PluginDir.mkdirs();
 			AppLog.InitLogFile();
 			try {
 				AppTools.unZip(this, "WMWAssets.zip", APPDIR, false);
@@ -166,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
 			AppTools.ExportAssets(this, APPDIR + "/image/", "rock_hilight.png");
 			AppTools.ExportAssets(this, APPDIR + "/image/", "rock_shadow.png");
 		}
+
 	}
 
 	public void getExistLevel() {
