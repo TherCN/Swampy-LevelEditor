@@ -3,6 +3,7 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,8 +17,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.Set;
 import thercn.swampy.leveleditor.AppUtils.AppLog;
 import thercn.swampy.leveleditor.AppUtils.AppTools;
 import thercn.swampy.leveleditor.CustomWidget.MyAdapter;
@@ -39,43 +38,19 @@ public class LevelEditor extends AppCompatActivity {
 	LevelXMLParser currentLevel;
 	ObjectView level_image;
 	File levelObjectImagePath;
-	String levelXMLPath;
-	
+	String levelPath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.level_editor);
         OpenLevel = getIntent().getStringExtra("LevelName");
         Button reload = findViewById(R.id.reload);
-		levelXMLPath =
-            NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel + ".xml";
-		
-        reload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showImage(OpenLevel);
-                    showObjects(OpenLevel);
-					showObjectImage(levelXMLPath);
-                }
-            });
+		levelPath =
+            NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel;
 
-
-    }
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		showImage(OpenLevel);
-        showObjects(OpenLevel);
-		showObjectImage(levelXMLPath);
-	}
-
-
-    public void showImage(String currentLevel) {
-
-        String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
-        String levelimage_path =
-            NewLevel.LevelsDir + "/" + currentLevel + "/" + currentLevel + ".png";
+		String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
+        String levelimage_path = levelPath + ".png";
         if (Custom_PNG_Path != "") {
             try {
                 Runtime.getRuntime().exec("cp " + Custom_PNG_Path + " " +
@@ -85,10 +60,35 @@ public class LevelEditor extends AppCompatActivity {
         }
 
         Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
-        final TextView ClickLocation = findViewById(R.id.click);
         level_image = findViewById(R.id.level_image);
 		level_image.setImageBitmap(levelimage);
+
+        reload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showImage(OpenLevel);
+                    showObjects(OpenLevel);
+					showObjectImage(levelPath + ".xml");
+                }
+            });
+    }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		showImage(OpenLevel);
+        showObjects(OpenLevel);
+		AppLog.WriteLog(level_image.getHeight() + " " + level_image.getWidth());
+		
+	}
+
+
+    public void showImage(String currentLevel) {
+
+
+		final TextView ClickLocation = findViewById(R.id.click);
         ClickLocation.setTextSize(10);
+		showObjectImage(levelPath + ".xml");
 		level_image.setOnTouchListener(new View.OnTouchListener() {
                 double[] lastPos = {0, 0};
 
@@ -154,6 +154,9 @@ public class LevelEditor extends AppCompatActivity {
                     }
                 }
             });
+		AppLog.WriteLog(level_image.getHeight() + " " + level_image.getWidth());
+		
+		showObjectImage(levelPath + ".xml");
     }
     //这里我自己定义了一个单位"gl"，全名Game Location，也就是游戏内的坐标
     public static double[] px2gl(double x, double y) {
@@ -231,20 +234,20 @@ public class LevelEditor extends AppCompatActivity {
 						return;
 					}
 					/*
-					for (int i = 0; i < level.getObjects().length; i++) {
-						if (ObjectName.getText().toString() == level.getObjects()[i]) {
-							AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
-							return;
-						} 
+					 for (int i = 0; i < level.getObjects().length; i++) {
+					 if (ObjectName.getText().toString() == level.getObjects()[i]) {
+					 AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
+					 return;
+					 } 
 
-					}
-					*/
+					 }
+					 */
 					if (level.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString())) {
 						level.saveModifyToFile();
 						AppTools.printText(LevelEditor.this, "添加成功" + ObjectName.getText().toString());
 						Dialog.dismiss();
 						showObjects(OpenLevel);
-						showObjectImage(levelXMLPath);
+						showObjectImage(levelPath + ".xml");
 					}
 				}
 			});
@@ -268,7 +271,7 @@ public class LevelEditor extends AppCompatActivity {
 					currentLevel = new LevelXMLParser(level);
 					String[] names = currentLevel.getObjects();
 					String[] locationStr = new String[names.length];
-					double[][] reallocation = new double[names.length][2];
+					float[][] reallocation = new float[names.length][2],fixedLocation = new float[names.length][2];
 					String[] path = new String[names.length];
 					double[] angle = new double[names.length];
 					String filename = null,angleValue = null;
@@ -284,12 +287,10 @@ public class LevelEditor extends AppCompatActivity {
 						}
 
 						// 将过滤后的字符串存回数组
-						
+
 						path[i] = CropObjectImage(filename);
-						
+
 						locationStr[i] = currentLevel.getObjectProperties(i)[1][0];
-						reallocation[i][0] = Double.parseDouble(locationStr[i].split(" ")[0]);
-						reallocation[i][1] = Double.parseDouble(locationStr[i].split(" ")[1]);
 
 						for (int a = 0; a < currentLevel.getObjectProperties(i)[0].length; a++) {
 							if (currentLevel.getObjectProperties(i)[0][a].equals("Angle")) {
@@ -297,22 +298,68 @@ public class LevelEditor extends AppCompatActivity {
 							}
 						}
 						angle[i] = Double.parseDouble(angleValue);
+						reallocation[i][0] = Float.parseFloat(locationStr[i].split(" ")[0]);
+						reallocation[i][1] = Float.parseFloat(locationStr[i].split(" ")[1]);
+
+
+					}
+					for (int i = 0; i < names.length; i++) {
+						Bitmap a = BitmapFactory.decodeFile(path[i]);
+						Bitmap rotatedBitmap = level_image.rotateBitmap(a, (float)angle[i]);
+
+						float[] input = reallocation[i];
+						//AppLog.WriteLog("视图大小:" + level_image.getHeight() + " " + level_image.getWidth());
+
+						float x = level_image.getWidth() / 2 - rotatedBitmap.getWidth() / 2;
+						float y = level_image.getHeight() / 2 - rotatedBitmap.getHeight() / 2;
+						double scaleX = -5.5555555555555;
+						double scaleY = 5.5555541666666;
+						fixedLocation[i][0] = (float)(x - scaleX * reallocation[i][0]);
+						fixedLocation[i][1] = (float)(y - scaleY * reallocation[i][1]);
 					}
 
 
-					level_image.setData(path, names, reallocation, angle);
+					level_image.setData(path, names, fixedLocation, angle);
 				}
 			});
 		thread.start();
 
 	}
-	
+
+	public float[] fixLocation(float[] origLocation, Bitmap image) {
+
+		float[] returnLocation = new float[2];
+
+		float x = level_image.getWidth() / 2 - image.getWidth() / 2;
+		float y = level_image.getHeight() / 2 - image.getHeight() / 2;
+		double scaleX = -5.5555555555555;
+		double scaleY = 5.5555541666666;
+		returnLocation[0] = (float)(x - scaleX * origLocation[0]);
+		returnLocation[1] = (float)(y - scaleY * origLocation[1]);
+
+		return returnLocation;
+
+
+
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
 	public String CropObjectImage(String object) {
 		SpriteCroper objectImage = new SpriteCroper(new File("/sdcard/SLE" + object));
 		File file = new File(levelObjectImagePath + "/" + object.split("/")[2] + ".png");
 		try {
-			if (!file.exists()) 
-			{
+			if (!file.exists()) {
 				String[] sprites = objectImage.getSpritesForObject();
 				for (int i = 0; i < sprites.length; i++) {
 					String[] imagelist = objectImage.getImageListForSprite(sprites[i]);

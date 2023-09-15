@@ -11,6 +11,7 @@
 
     <application
 		android:name=".SLEApplication"
+		android:debuggable="true"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:roundIcon="@drawable/app_icon"
