@@ -51,22 +51,25 @@ public class LevelEditor extends AppCompatActivity {
 
 		String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
         String levelimage_path = levelPath + ".png";
+		currentLevel = new LevelXMLParser(levelPath + ".xml");
         if (Custom_PNG_Path != "") {
             try {
                 Runtime.getRuntime().exec("cp " + Custom_PNG_Path + " " +
                                           levelimage_path);
             } catch (IOException e) {
+				AppLog.WriteExceptionLog(e);
             }
         }
 
-        Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
+        final Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
         level_image = findViewById(R.id.level_image);
 		level_image.setImageBitmap(levelimage);
-
+		showImage();
+		showObjectImage(levelPath + ".xml");
         reload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showImage(OpenLevel);
+                    showImage();
                     showObjects(OpenLevel);
 					showObjectImage(levelPath + ".xml");
                 }
@@ -76,19 +79,14 @@ public class LevelEditor extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		showImage(OpenLevel);
+		showImage();
         showObjects(OpenLevel);
-		AppLog.WriteLog(level_image.getHeight() + " " + level_image.getWidth());
-		
+
 	}
 
-
-    public void showImage(String currentLevel) {
-
-
+    private void showImage() {
 		final TextView ClickLocation = findViewById(R.id.click);
         ClickLocation.setTextSize(10);
-		showObjectImage(levelPath + ".xml");
 		level_image.setOnTouchListener(new View.OnTouchListener() {
                 double[] lastPos = {0, 0};
 
@@ -154,12 +152,9 @@ public class LevelEditor extends AppCompatActivity {
                     }
                 }
             });
-		AppLog.WriteLog(level_image.getHeight() + " " + level_image.getWidth());
-		
-		showObjectImage(levelPath + ".xml");
-    }
+	}
     //这里我自己定义了一个单位"gl"，全名Game Location，也就是游戏内的坐标
-    public static double[] px2gl(double x, double y) {
+    private double[] px2gl(double x, double y) {
         double NumX = 5.5555555555555;
         double NumY = -5.5555541666666;
         double realX = x / NumX;
@@ -167,11 +162,19 @@ public class LevelEditor extends AppCompatActivity {
         return new double[] {realX, realY};
     }
 
-
-    public void showObjects(String currentLevelFile) {
-        String levelxmlPath =
-            NewLevel.LevelsDir + "/" + currentLevelFile + "/" + currentLevelFile + ".xml";
-		currentLevel = new LevelXMLParser(levelxmlPath);
+	private String[] getObjectFiles() {
+		File[] files = new File(MainActivity.APPDIR + "/Objects/").listFiles();
+		if (files != null) {
+			String[] fileNames = new String[files.length];
+			for (int i = 0; i < files.length; i++) {
+				fileNames[i] = "/Objects/" + files[i].getName();
+			}
+			return fileNames;
+		}
+		return null;
+	}
+	
+    private void showObjects(String currentLevelFile) {  
 		String[] Objects = currentLevel.getObjects();
 		final ArrayAdapter<String> Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Objects);
 		ListView ObjectList = findViewById(R.id.object_list);
@@ -208,7 +211,7 @@ public class LevelEditor extends AppCompatActivity {
 
     }
 
-	public void addObjectDialog(final LevelXMLParser level) {
+	private void addObjectDialog(final LevelXMLParser level) {
 		AlertDialog.Builder newObjectDialog = new AlertDialog.Builder(this);
 		View view =
 			getLayoutInflater().inflate(R.layout.add_object, null);
@@ -239,7 +242,6 @@ public class LevelEditor extends AppCompatActivity {
 					 AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
 					 return;
 					 } 
-
 					 }
 					 */
 					if (level.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString())) {
@@ -253,17 +255,6 @@ public class LevelEditor extends AppCompatActivity {
 			});
 	}
 
-	public String[] getObjectFiles() {
-		File[] files = new File(MainActivity.APPDIR + "/Objects/").listFiles();
-		if (files != null) {
-			String[] fileNames = new String[files.length];
-			for (int i = 0; i < files.length; i++) {
-				fileNames[i] = "/Objects/" + files[i].getName();
-			}
-			return fileNames;
-		}
-		return null;
-	}
 
 	private void showObjectImage(final String level) {
 		Thread thread = new Thread(new Runnable(){
@@ -285,13 +276,9 @@ public class LevelEditor extends AppCompatActivity {
 								filename = currentLevel.getObjectProperties(i)[1][a];
 							}
 						}
-
-						// 将过滤后的字符串存回数组
-
 						path[i] = CropObjectImage(filename);
 
 						locationStr[i] = currentLevel.getObjectProperties(i)[1][0];
-
 						for (int a = 0; a < currentLevel.getObjectProperties(i)[0].length; a++) {
 							if (currentLevel.getObjectProperties(i)[0][a].equals("Angle")) {
 								angleValue = currentLevel.getObjectProperties(i)[1][a];
@@ -300,15 +287,17 @@ public class LevelEditor extends AppCompatActivity {
 						angle[i] = Double.parseDouble(angleValue);
 						reallocation[i][0] = Float.parseFloat(locationStr[i].split(" ")[0]);
 						reallocation[i][1] = Float.parseFloat(locationStr[i].split(" ")[1]);
-
-
+					}
+					try {
+						// 休眠0.3秒，以等待ImageView更新宽高后再获取，避免错位
+						Thread.currentThread().sleep(300);
+					} catch (InterruptedException e) {
+						// 如果在休眠时被中断，这里会捕获到中断异常
+						e.printStackTrace();
 					}
 					for (int i = 0; i < names.length; i++) {
 						Bitmap a = BitmapFactory.decodeFile(path[i]);
 						Bitmap rotatedBitmap = level_image.rotateBitmap(a, (float)angle[i]);
-
-						float[] input = reallocation[i];
-						//AppLog.WriteLog("视图大小:" + level_image.getHeight() + " " + level_image.getWidth());
 
 						float x = level_image.getWidth() / 2 - rotatedBitmap.getWidth() / 2;
 						float y = level_image.getHeight() / 2 - rotatedBitmap.getHeight() / 2;
@@ -326,36 +315,7 @@ public class LevelEditor extends AppCompatActivity {
 
 	}
 
-	public float[] fixLocation(float[] origLocation, Bitmap image) {
-
-		float[] returnLocation = new float[2];
-
-		float x = level_image.getWidth() / 2 - image.getWidth() / 2;
-		float y = level_image.getHeight() / 2 - image.getHeight() / 2;
-		double scaleX = -5.5555555555555;
-		double scaleY = 5.5555541666666;
-		returnLocation[0] = (float)(x - scaleX * origLocation[0]);
-		returnLocation[1] = (float)(y - scaleY * origLocation[1]);
-
-		return returnLocation;
-
-
-
-
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-	public String CropObjectImage(String object) {
+	private String CropObjectImage(String object) {
 		SpriteCroper objectImage = new SpriteCroper(new File("/sdcard/SLE" + object));
 		File file = new File(levelObjectImagePath + "/" + object.split("/")[2] + ".png");
 		try {
