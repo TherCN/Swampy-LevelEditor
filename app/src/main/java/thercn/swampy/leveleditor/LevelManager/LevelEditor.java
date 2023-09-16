@@ -3,7 +3,6 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,12 +38,20 @@ public class LevelEditor extends AppCompatActivity {
 	ObjectView level_image;
 	File levelObjectImagePath;
 	String levelPath;
+	String currentObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.level_editor);
-        OpenLevel = getIntent().getStringExtra("LevelName");
+        InitEditor();
+		showImage();
+		showObjectImage();
+
+    }
+
+	private void InitEditor() {
+		OpenLevel = getIntent().getStringExtra("LevelName");
         Button reload = findViewById(R.id.reload);
 		levelPath =
             NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel;
@@ -64,24 +71,32 @@ public class LevelEditor extends AppCompatActivity {
         final Bitmap levelimage = BitmapFactory.decodeFile(levelimage_path);
         level_image = findViewById(R.id.level_image);
 		level_image.setImageBitmap(levelimage);
-		showImage();
-		showObjectImage(levelPath + ".xml");
-        reload.setOnClickListener(new View.OnClickListener() {
+
+		reload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showImage();
-                    showObjects(OpenLevel);
-					showObjectImage(levelPath + ".xml");
+                    showObjects();
+					showObjectImage();
                 }
             });
-    }
+		Button save = findViewById(R.id.save);
+		save.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					if (currentLevel.saveModifyToFile()) {
+						AppTools.printText(LevelEditor.this, "已保存！");
+					}
+				}
+			});
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		showImage();
-        showObjects(OpenLevel);
-
+        showObjects();
 	}
 
     private void showImage() {
@@ -152,6 +167,7 @@ public class LevelEditor extends AppCompatActivity {
                     }
                 }
             });
+
 	}
     //这里我自己定义了一个单位"gl"，全名Game Location，也就是游戏内的坐标
     private double[] px2gl(double x, double y) {
@@ -173,8 +189,8 @@ public class LevelEditor extends AppCompatActivity {
 		}
 		return null;
 	}
-	
-    private void showObjects(String currentLevelFile) {  
+
+    private void showObjects() {  
 		String[] Objects = currentLevel.getObjects();
 		final ArrayAdapter<String> Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Objects);
 		ListView ObjectList = findViewById(R.id.object_list);
@@ -192,10 +208,11 @@ public class LevelEditor extends AppCompatActivity {
 		level_image.setOnObjectViewClickedListener(new ObjectView.OnObjectViewClickedListener() {
 				@Override
 				public void onObjectViewClicked(String name) {
-					// 当点击小图片时执行的代码。
 					String[][] currentObjectInfo = currentLevel.getObjectProperties(name);
 					MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 					PropertiesList.setAdapter(ObjectProperties);
+					currentObject = name;
+					AppTools.printText(LevelEditor.this, currentObject);
 				}
 			});
 		final Button add_object = findViewById(R.id.add_object);
@@ -203,15 +220,27 @@ public class LevelEditor extends AppCompatActivity {
 
 				@Override
 				public void onClick(View view) {
-					addObjectDialog(currentLevel);
+					addObjectDialog();
 				}
 			});
 
+		Button addProperty = findViewById(R.id.add_property);
+		//addProperty.setVisibility(2);
+		addProperty.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					if (currentObject != null) {
+						addPropertyDialog(currentObject);
+					}
+				}
+			});
+		
 
 
     }
 
-	private void addObjectDialog(final LevelXMLParser level) {
+	private void addObjectDialog() {
 		AlertDialog.Builder newObjectDialog = new AlertDialog.Builder(this);
 		View view =
 			getLayoutInflater().inflate(R.layout.add_object, null);
@@ -244,22 +273,31 @@ public class LevelEditor extends AppCompatActivity {
 					 } 
 					 }
 					 */
-					if (level.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString())) {
-						level.saveModifyToFile();
+					if (currentLevel.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString())) {
+						//level.saveModifyToFile();
 						AppTools.printText(LevelEditor.this, "添加成功" + ObjectName.getText().toString());
 						Dialog.dismiss();
-						showObjects(OpenLevel);
-						showObjectImage(levelPath + ".xml");
+						showObjects();
+						showObjectImage();
 					}
 				}
 			});
 	}
 
+	private String getObjectFile(String object) {
+		String filename = null;
+		for (int a = 0; a < currentLevel.getObjectProperties(object)[0].length; a++) {
+			if (currentLevel.getObjectProperties(object)[0][a].equals("Filename")) {
+				filename = currentLevel.getObjectProperties(object)[1][a];
+				return filename;
+			}
+		}
+		return filename;
+	}
 
-	private void showObjectImage(final String level) {
+	private void showObjectImage() {
 		Thread thread = new Thread(new Runnable(){
 				public void run() {
-					currentLevel = new LevelXMLParser(level);
 					String[] names = currentLevel.getObjects();
 					String[] locationStr = new String[names.length];
 					float[][] reallocation = new float[names.length][2],fixedLocation = new float[names.length][2];
@@ -337,6 +375,57 @@ public class LevelEditor extends AppCompatActivity {
 			return null;
 		}
 	}
+
+	private void addPropertyDialog(String object) {
+		if (currentLevel.getDefaultProperties(getObjectFile(currentObject)) == null)
+		{
+			AppTools.printText(LevelEditor.this,"该物体没有默认属性！");
+			return;
+		}
+		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+		View view = getLayoutInflater().inflate(R.layout.add_property, null);
+		dialog.setView(view);
+		dialog.setTitle("请输入属性");
+		final AlertDialog addPropertyDialog = dialog.create();
+		addPropertyDialog.show();
+		final SpinnerEditText defaultPropertyList = view.findViewById(R.id.propertyName);
+		String[][] defaultProperties = currentLevel.getDefaultProperties(getObjectFile(currentObject));
+		
+		String[] defaultPropertyName = new String[defaultProperties.length];
+		AppTools.printText(LevelEditor.this,"默认属性数量:" + defaultProperties.length);
+		for (int i = 0; i < defaultProperties.length; i++) {
+			defaultPropertyName[i] = defaultProperties[i][0];
+		}
+		defaultPropertyList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, defaultPropertyName));
+		Button add_btn = view.findViewById(R.id.add_btn);
+		final EditText propertyValue = view.findViewById(R.id.propertyValue);
+		add_btn.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					if (propertyValue.getText().toString().isEmpty()) {
+						AppTools.printText(LevelEditor.this, "属性值为空！");
+					}
+					if (defaultPropertyList.getText().toString().isEmpty()) {
+						AppTools.printText(LevelEditor.this, "属性名为空！");
+					}
+					currentLevel.addProperty(currentLevel.getObjectItemId(currentObject), defaultPropertyList.getText().toString(), propertyValue.getText().toString());
+					addPropertyDialog.dismiss();
+					showObjectImage();
+					showObjects();
+				}
+			});
+
+
+
+	}	
+
+
+
+
+
+
+
 
     public void EditProperty() {
     }

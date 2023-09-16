@@ -117,9 +117,9 @@ public class LevelXMLParser {
 	// 添加默认属性
 	public void addType(String name) {
 		String[][] Object = getObjectProperties(getObjectItemId(name));
-		String[][] DefaultPropertues = getDefaultProperties(Object[1][2]);
-		addProperty(getObjectItemId(name), DefaultPropertues[0][0],
-					DefaultPropertues[0][1]);
+		String[][] DefaultProperties = getDefaultProperties(Object[1][2]);
+		addProperty(getObjectItemId(name), DefaultProperties[0][0],
+					DefaultProperties[0][1]);
 	}
 	// 从物体名获取索引值
 	public int getObjectItemId(String name) {
@@ -152,28 +152,33 @@ public class LevelXMLParser {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse("/sdcard/SLE" + fileName);
+			Document doc = dBuilder.parse(new File("/sdcard/SLE" + fileName));
 			doc.getDocumentElement().normalize();
 			NodeList nodeList = doc.getElementsByTagName("DefaultProperties");
-			int totalNodes = nodeList.getLength();
-			String[][] properties = new String[totalNodes][2];
-			for (int i = 0; i < totalNodes; i++) {
-				Element element = (Element)nodeList.item(i);
-				NodeList propertyList = element.getElementsByTagName("Property");
-				properties[i][0] = propertyList.item(0)
+			if (nodeList.getLength() == 0)
+			{
+				return null;
+			}
+			Element element = (Element)nodeList.item(0);
+			NodeList propertyList = element.getElementsByTagName("Property");
+			String[][] properties = new String[propertyList.getLength()][2];
+			for (int n = 0; n < propertyList.getLength(); n++) {
+				properties[n][0] = propertyList.item(n)
 					.getAttributes()
 					.getNamedItem("name")
 					.getNodeValue();
-				properties[i][1] = propertyList.item(0)
+				properties[n][1] = propertyList.item(n)
 					.getAttributes()
 					.getNamedItem("value")
 					.getNodeValue();
-			}
-			return properties;
-		} catch (Exception e) {
-			AppLog.WriteLog(e.getMessage());
-			return null;
+			
 		}
+		AppLog.WriteLog(properties.length + " " + properties[0].length);
+		return properties;
+	} catch (Exception e) {
+		AppLog.WriteExceptionLog(e);
+		return null;
+	}
 	}
 	// 删除物体
 	public boolean removeObject(String name) {
@@ -310,7 +315,7 @@ public class LevelXMLParser {
 			Runtime.getRuntime().exec("sed -i \"1s|<Objects>|\n<Objects>\n|g\" " + xmlFile.toString());
 			return true;
 		} catch (IOException e) {
-
+			AppLog.WriteExceptionLog(e);
 			return false;
 		}
 	}

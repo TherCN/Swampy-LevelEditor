@@ -5,8 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
 import thercn.swampy.leveleditor.R;
+import android.widget.ArrayAdapter;
 
 public class MyAdapter extends BaseAdapter {
     private Context mContext;
@@ -22,10 +22,10 @@ public class MyAdapter extends BaseAdapter {
         return mObjectProperties[0].length;
     }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
+	@Override
+	public Object getItem(int position) {
+		return "a";
+	}
 
     @Override
     public long getItemId(int position) {
