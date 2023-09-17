@@ -20,6 +20,7 @@
 			android:id="@+id/reload"
 			android:layout_height="wrap_content"
 			android:text="重新加载"
+			android:enabled="false"
 			android:textSize="10sp"/>
 
 		<Button

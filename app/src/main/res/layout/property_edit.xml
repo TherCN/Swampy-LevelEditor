@@ -31,5 +31,12 @@
 		android:id="@+id/editPropertyValue"
 		android:maxLines="1"/>
 
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:enabled="false"
+		android:text="更新"
+		android:id="@+id/update"/>
+
 </LinearLayout>
 

@@ -110,7 +110,7 @@ public class LevelXMLParser {
 			addProperty(getObjectItemId(name), "Filename", filePath);
 			return true;
 		} catch (Exception e) {
-
+			AppLog.WriteExceptionLog(e);
 			return false;
 		}
 	}
@@ -155,8 +155,7 @@ public class LevelXMLParser {
 			Document doc = dBuilder.parse(new File("/sdcard/SLE" + fileName));
 			doc.getDocumentElement().normalize();
 			NodeList nodeList = doc.getElementsByTagName("DefaultProperties");
-			if (nodeList.getLength() == 0)
-			{
+			if (nodeList.getLength() == 0) {
 				return null;
 			}
 			Element element = (Element)nodeList.item(0);
@@ -171,14 +170,13 @@ public class LevelXMLParser {
 					.getAttributes()
 					.getNamedItem("value")
 					.getNodeValue();
-			
+
+			}
+			return properties;
+		} catch (Exception e) {
+			AppLog.WriteExceptionLog(e);
+			return null;
 		}
-		AppLog.WriteLog(properties.length + " " + properties[0].length);
-		return properties;
-	} catch (Exception e) {
-		AppLog.WriteExceptionLog(e);
-		return null;
-	}
 	}
 	// 删除物体
 	public boolean removeObject(String name) {
@@ -274,19 +272,35 @@ public class LevelXMLParser {
 	// 设置属性值
 	public void setPropertyValue(int item, String name, String value) {
 		Element object = (Element)objectNodes.item(item);
+		NodeList locationNodes =
+			object.getElementsByTagName("AbsoluteLocation");
+
+		for (int j = 0; j < locationNodes.getLength(); j++) {
+			Node locationNode = locationNodes.item(j);
+			if (locationNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element locationElement = (Element)locationNode;
+				locationElement.setAttribute("value", value);
+				return;
+			}
+		}
 		Node propertiesNode = object.getElementsByTagName("Properties").item(0);
 		NodeList propertyNodes = propertiesNode.getChildNodes();
 		for (int i = 0; i < propertyNodes.getLength(); i++) {
 			Node node = propertyNodes.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				Element propertyElement = (Element)node;
-				if (propertyElement.getAttribute("name").equals(name)) {
-					propertyElement.setAttribute("value", value);
-					break;
+				if (propertyElement.getAttribute("name").equals(name) && !propertyElement.getAttribute("name").equals("AbsoluteLocation")) {
+					try {
+						propertyElement.setAttribute("value", value);
+						return;
+					} catch (DOMException e) {
+						AppLog.WriteExceptionLog(e);
+					}
 				}
 			}
 		}
 	}
+	
 	// 打印预览
 	public boolean printPreview(Context context) {
 		try {

@@ -3,6 +3,7 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,7 +35,7 @@ public class LevelEditor extends AppCompatActivity {
     boolean isScrolling;
     long touchStartTime;
 	String OpenLevel;
-	LevelXMLParser currentLevel;
+	public static LevelXMLParser currentLevel;
 	ObjectView level_image;
 	File levelObjectImagePath;
 	String levelPath;
@@ -52,13 +53,14 @@ public class LevelEditor extends AppCompatActivity {
 
 	private void InitEditor() {
 		OpenLevel = getIntent().getStringExtra("LevelName");
-        Button reload = findViewById(R.id.reload);
+        final Button reload = findViewById(R.id.reload);
 		levelPath =
             NewLevel.LevelsDir + "/" + OpenLevel + "/" + OpenLevel;
 
 		String Custom_PNG_Path = getIntent().getStringExtra("LevelPNGPath");
         String levelimage_path = levelPath + ".png";
 		currentLevel = new LevelXMLParser(levelPath + ".xml");
+
         if (Custom_PNG_Path != "") {
             try {
                 Runtime.getRuntime().exec("cp " + Custom_PNG_Path + " " +
@@ -75,18 +77,31 @@ public class LevelEditor extends AppCompatActivity {
 		reload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+					reload.setEnabled(false);
                     showImage();
                     showObjects();
 					showObjectImage();
                 }
             });
-		Button save = findViewById(R.id.save);
+		final Button save = findViewById(R.id.save);
 		save.setOnClickListener(new View.OnClickListener() {
 
 				@Override
 				public void onClick(View view) {
 					if (currentLevel.saveModifyToFile()) {
+						save.setEnabled(false);
+						reload.setEnabled(true);
+						currentLevel = new LevelXMLParser(levelPath + ".xml");
 						AppTools.printText(LevelEditor.this, "已保存！");
+
+						Handler handler = new Handler();
+						handler.postDelayed(new Runnable() {
+								@Override
+								public void run() {
+									save.setEnabled(true);
+								}
+							}, 3000);
+
 					}
 				}
 			});
@@ -97,6 +112,7 @@ public class LevelEditor extends AppCompatActivity {
 		super.onResume();
 		showImage();
         showObjects();
+		showObjectImage();
 	}
 
     private void showImage() {
@@ -203,6 +219,7 @@ public class LevelEditor extends AppCompatActivity {
 					String[][] currentObjectInfo = currentLevel.getObjectProperties((int)itemId);
 					MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 					PropertiesList.setAdapter(ObjectProperties);
+					ObjectProperties.setCurrentObject((int)itemId);
 				}
 			});
 		level_image.setOnObjectViewClickedListener(new ObjectView.OnObjectViewClickedListener() {
@@ -211,7 +228,9 @@ public class LevelEditor extends AppCompatActivity {
 					String[][] currentObjectInfo = currentLevel.getObjectProperties(name);
 					MyAdapter ObjectProperties = new MyAdapter(LevelEditor.this, currentObjectInfo);
 					PropertiesList.setAdapter(ObjectProperties);
+					ObjectProperties.setCurrentObject(name);
 					currentObject = name;
+
 					AppTools.printText(LevelEditor.this, currentObject);
 				}
 			});
@@ -225,7 +244,6 @@ public class LevelEditor extends AppCompatActivity {
 			});
 
 		Button addProperty = findViewById(R.id.add_property);
-		//addProperty.setVisibility(2);
 		addProperty.setOnClickListener(new View.OnClickListener() {
 
 				@Override
@@ -235,7 +253,7 @@ public class LevelEditor extends AppCompatActivity {
 					}
 				}
 			});
-		
+
 
 
     }
@@ -261,22 +279,24 @@ public class LevelEditor extends AppCompatActivity {
 						AppTools.printText(LevelEditor.this, "物体名字为空！");
 						return;
 					}
+
 					if (ObjectFile.getText().toString().isEmpty()) {
 						AppTools.printText(LevelEditor.this, "物体文件为空！");
 						return;
 					}
-					/*
-					 for (int i = 0; i < level.getObjects().length; i++) {
-					 if (ObjectName.getText().toString() == level.getObjects()[i]) {
-					 AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
-					 return;
-					 } 
-					 }
-					 */
+
+					for (int i = 0; i < currentLevel.getObjects().length; i++) {
+						if (ObjectName.getText().toString().equals(currentLevel.getObjects()[i])) {
+							AppTools.printText(LevelEditor.this, "已存在相同名字的物体！");
+							return;
+						} 
+					}
+
 					if (currentLevel.addObject(ObjectName.getText().toString(), ObjectFile.getText().toString())) {
 						//level.saveModifyToFile();
 						AppTools.printText(LevelEditor.this, "添加成功" + ObjectName.getText().toString());
 						Dialog.dismiss();
+						//currentLevel.saveModifyToFile();
 						showObjects();
 						showObjectImage();
 					}
@@ -377,9 +397,8 @@ public class LevelEditor extends AppCompatActivity {
 	}
 
 	private void addPropertyDialog(String object) {
-		if (currentLevel.getDefaultProperties(getObjectFile(currentObject)) == null)
-		{
-			AppTools.printText(LevelEditor.this,"该物体没有默认属性！");
+		if (currentLevel.getDefaultProperties(getObjectFile(currentObject)) == null) {
+			AppTools.printText(LevelEditor.this, "该物体没有默认属性！");
 			return;
 		}
 		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -390,9 +409,9 @@ public class LevelEditor extends AppCompatActivity {
 		addPropertyDialog.show();
 		final SpinnerEditText defaultPropertyList = view.findViewById(R.id.propertyName);
 		String[][] defaultProperties = currentLevel.getDefaultProperties(getObjectFile(currentObject));
-		
+
 		String[] defaultPropertyName = new String[defaultProperties.length];
-		AppTools.printText(LevelEditor.this,"默认属性数量:" + defaultProperties.length);
+		AppTools.printText(LevelEditor.this, "默认属性数量:" + defaultProperties.length);
 		for (int i = 0; i < defaultProperties.length; i++) {
 			defaultPropertyName[i] = defaultProperties[i][0];
 		}
@@ -420,14 +439,15 @@ public class LevelEditor extends AppCompatActivity {
 
 	}	
 
-
-
-
-
-
-
-
     public void EditProperty() {
+
+
+
+
+
+
+
+
     }
     public void writePNG() {}
 
