@@ -45,11 +45,9 @@ public class MainActivity extends AppCompatActivity {
 		print("当前版本:20230911");
 		setContentView(R.layout.activity_main);
 		// You can modify this if judgment to view the functionality of Chinese updates
-		/*
 		if (AppTools.getLanguage() != "zh") {
 			setContentView(R.layout.main_act_english);
 		}
-		*/
 		if (!Permission.checkPermission(this)) {
 			Thread.currentThread().suspend();
 		}
